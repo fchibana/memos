@@ -7,6 +7,7 @@
 - Numpy
 - Matplotlib
 - [EMCEE](https://emcee.readthedocs.io/en/stable/)
+- Scipy
 - [corner.py](https://corner.readthedocs.io/en/latest/index.html)
 
 
