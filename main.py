@@ -5,8 +5,9 @@ import os
 import time
 import matplotlib as plt
 
-from likelihood import lnprob
-
+# from likelihood import lnprob
+from itm.likelihood import lnprob
+ 
 start_time = time.time()
 
 # chute da posicao inicial dos walkers. a posicao de cada walker eh diferente. o p1_0 eh o centro da bola
