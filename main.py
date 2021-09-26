@@ -1,31 +1,28 @@
-import numpy as np
-import emcee
+from datetime import datetime
+
 import corner
-import os
-import time
+import emcee
 import matplotlib as plt
+import numpy as np
 
-# from likelihood import lnprob
-from itm.likelihood import lnprob
+import itm.likelihood
+import itm.utils
  
-start_time = time.time()
+config_params = itm.utils.load_config("/Users/fabio/code/fchibana/tachyons/config.yaml")
 
-# chute da posicao inicial dos walkers. a posicao de cada walker eh diferente. o p1_0 eh o centro da bola
-p0 = [24.96, 0.69, 0.022, 0.12]
+print(config_params)
 
-nwalkers = 2**3  # no. de walkers
-steps = 1000  # no. de passos
-burnin = 100  # tempo (passos) para os walker passarem o burn in
+mcmc_params = config_params["mcmc_params"]
 
-ndim = len(p0)  # no. de parametros
-# nthreads = 4
 
-# which data?
-file_name = 'lcdm'
-base_path = "/Users/fabio/code/fchibana/memos"
+p0 = [24.96, 0.69, 0.022, 0.12]         # initial guess 
+ndim = len(p0)  
+nwalkers =  mcmc_params["n_walkers"] 
 
-filename = "test.h5"
-backend = emcee.backends.HDFBackend(filename)
+out_name = "results/" + datetime.now().strftime("%Y%m%d_%H%M%S")
+print(out_name)
+
+backend = emcee.backends.HDFBackend(out_name + ".h5")
 backend.reset(nwalkers, ndim)
 
 
@@ -33,19 +30,11 @@ backend.reset(nwalkers, ndim)
 
 print("MCMC")
 print("walkers: ", nwalkers)
-print("steps: ", steps)
 
 
 
 # initialize sampler
-sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, backend=backend)
-# j = 0
-# while os.path.exists("results/chains/chains_"+file_name+"_%s.dat" % j) or os.path.exists("results/chains_"+file_name+"_%s.txt" % j) or  os.path.exists("results/triagle_scf_"+file_name+"_%s.png" % j) or os.path.exists("results/triangle_"+file_name+"_%s.png" % j) :
-#     j += 1
-#     print(j)
-
-# f = open("results/chains/chains_"+file_name+"_%s.dat" %j, "w")
-# f.close()
+sampler = emcee.EnsembleSampler(nwalkers, ndim, itm.likelihood.lnprob, backend=backend)
 
 # condicoes iniciais dos walkers dentro da bola de centro p1_0
 pos = [p0 + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
@@ -62,6 +51,7 @@ old_tau = np.inf
 # Now we'll sample for up to max_n steps
 for sample in sampler.sample(pos, iterations=max_n, progress=True):
     # Only check convergence every 100 steps
+    steps = sampler.iteration
     if sampler.iteration % 100:
         continue
 
@@ -80,49 +70,15 @@ for sample in sampler.sample(pos, iterations=max_n, progress=True):
         break
     old_tau = tau
     
-# roda MCMC
-# print("Running burn in chains...")
-# state = sampler.run_mcmc(pos, burnin, progress=True)
-# sampler.reset()
 
-# print("Sampling the posterior...")
-# sampler.run_mcmc(state, int(steps), progress=True)
-# print("Done!")
-# Serialization
-#     position = result[0]
-# f = open("results/chains/chains_"+file_name+"_%s.dat" %j, "a")
-# for k in range(position.shape[0]):
-#     np.savetxt(f, position[k],fmt='%1.4e')
-# f.close()
 
 # Analysis ===========================================================================================
 
-# TODO: get autocorrelation time
 tau = sampler.get_autocorr_time()
-print(tau)
-
-flat_samples = sampler.get_chain(discard=1, thin=15, flat=True)
+burnin = int(2 * np.max(tau))
+thin = int(0.5 * np.min(tau))
+flat_samples = sampler.get_chain(discard=burnin, flat=True, thin=thin)
 print(flat_samples.shape)
-
-
-# TODO: compute sigmas
-
-# Calcula as medias de cada parametro
-# medias = []
-# for i in range(ndim):
-#     medias.append(np.percentile(samples[:,i],50))
-
-# Calcula os devios para cima e para baixo de cada parametro
-# desvios = []
-# for i in range(ndim):
-#     desvios.append([np.percentile(samples[:,i],84.13) - np.percentile(samples[:,i],50), np.percentile(samples[:,i],50) - np.percentile(samples[:,i],15.869999999999997)])
-
-# print("""MCMC result:
-#     M           = {0[0]} +{1[0][0]} -{1[0][1]}
-#     h          = {0[1]} +{1[1][0]} -{1[1][1]}
-#     omega0_b    = {0[2]} +{1[2][0]} -{1[2][1]}
-#     omega0_cdm  = {0[3]} +{1[3][0]} -{1[3][1]}
-# """.format(medias, desvios))
 
 fig = corner.corner(flat_samples,
                     labels=["M", "$h$",
@@ -132,11 +88,4 @@ fig = corner.corner(flat_samples,
 fig.suptitle('walkers: %s steps: %s' % (nwalkers, steps))
 # fig = corner.corner(flat_samples)
 
-fig.savefig("test.png")
-
-# create output files ==================================================================================
-# end_time = time.time() - start_time
-# execution_time = 'Execution time: '+str(end_time)+'s'
-
-# np.savetxt("results/chains_"+file_name+"_%s.txt" % j, samples, fmt='%1.4e', header=execution_time)
-# fig.savefig("results/triangle_"+file_name+"_%s.png" % j)
+fig.savefig(out_name + ".png")
