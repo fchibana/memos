@@ -303,12 +303,4 @@ def test_fap(params):
 	for i in range(len(y)):
 		msg = "{0:.3f}    {1:.3f}    {2:.3f}".format(y[i], model[i], abs((y[i]-model[i])/model[i]))
 		print(msg)
-
-def load_config(file_path):
-    with open(file_path, "r") as f:
-        return yaml.safe_load(f)
-    
-    
-
-    
     
