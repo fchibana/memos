@@ -1,0 +1,5 @@
+---
+constants:
+  c: 2.99792458e+08
+cosmo_params:
+  jla_norm: 25.0
