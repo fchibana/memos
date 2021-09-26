@@ -1,11 +1,13 @@
+import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import quad
 from math import sqrt, pow, log
-from lcdm import H
 
-import constants
+from itm.lcdm import H
+from itm import constants
 
+# import itm.lcdm 
 
 def inv_E(x, params):
     M, h, omega0_b, omega0_cdm = params
@@ -302,17 +304,11 @@ def test_fap(params):
 		msg = "{0:.3f}    {1:.3f}    {2:.3f}".format(y[i], model[i], abs((y[i]-model[i])/model[i]))
 		print(msg)
 
-if __name__ == "__main__":
+def load_config(file_path):
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
     
-    M = 25.					# JLA normalization 
-    h = 0.7302 
-    omega0_b = 0.022
-    omega0_cdm = 0.048
-    params = [M, h, omega0_b, omega0_cdm]
     
-    test_cc(params)
-    test_jla(params)
-    test_cmb(params)
-    test_bao(params)
-    test_wigglez(params)
-    test_fap(params)
+
+    
+    

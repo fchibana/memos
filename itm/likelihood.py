@@ -2,8 +2,8 @@ import numpy as np
 # import pylab as pl
 from math import pow, pi, sqrt
 
-from lcdm import H
-from cosmo_functions import distance_modulus, cmb, d_BAO, wigglez, fap
+from itm.lcdm import H
+from itm.cosmo_functions import distance_modulus, cmb, d_BAO, wigglez, fap
 
 
 def lnprior(params):

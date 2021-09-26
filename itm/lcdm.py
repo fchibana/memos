@@ -1,6 +1,6 @@
 import numpy as np
 
-import constants
+from itm import constants
 
 
 def H(z, params):
