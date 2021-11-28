@@ -17,10 +17,6 @@
 
 # TODO:
 
-- Change repo name
-- Move repo to private
-- create vev
-- check Python version dependencies EMCEE, CORNER
 - figure out architecture 
 - implement LCDM
 - implement Tachyons
