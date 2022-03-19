@@ -1,23 +1,23 @@
 import numpy as np
-# import pylab as pl
 from math import pow, pi, sqrt
 
 from itm.lcdm import H
 from itm.cosmo_functions import distance_modulus, cmb, d_BAO, wigglez, fap
 
-class Prob:
+class PosteriorCalculator:
     def __init__(self) -> None:
         pass
-        # load data here?
+        # load data here? create a data loader class?
     
-    def ln_probability(self, parameters):
-        priors = self.__ln_prior(parameters)
+    def ln_posterior(self, parameters):
+        ln_priors = self._ln_prior(parameters)
         
-        if np.isinf(priors):
+        if np.isinf(ln_priors):
             return -np.inf
-        return priors + self.ln_likelihood(parameters)
+        
+        return ln_priors + self._ln_likelihood(parameters)
     
-    def __ln_prior(self, parameters):
+    def _ln_prior(self, parameters):
         M, h, omega0_b, omega0_cdm = parameters
 
         H0 = 100. * h
@@ -28,7 +28,7 @@ class Prob:
             return 0
         return -np.inf
     
-    def ln_likelihood(self, parameters):
+    def _ln_likelihood(self, parameters):
         M, h, omega0_b, omega0_cdm = parameters
 
         H0 = 100. * h
