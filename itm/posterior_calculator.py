@@ -39,6 +39,13 @@ class PosteriorCalculator:
             self._jla = {'x': x,
                          'y': y,
                          'cov': flatten_cov}
+        
+        if 'bao_compilation' in experiments:
+            print("Loading bao_compilation data")
+            x, y, y_err = np.loadtxt("data/bao.txt", comments='#', unpack=True)
+            self._bao_compilation = {'x': x,
+                                     'y': y,
+                                     'y_err': y_err}
 
     def ln_posterior(self, parameters):
         ln_priors = self._ln_prior(parameters)
@@ -81,11 +88,16 @@ class PosteriorCalculator:
                                              y_err=self._cosmic_chronometers['y_err'])
             
         if 'jla' in self._experiments:
-            # model = self._cosmology.distance_modulus(x, params)
             model = self._observables.distance_modulus(self._jla['x'], parameters)
             ln_likehood += self._ln_multival_gaussian(y_fit=model,
                                                       y_target=self._jla['y'],
                                                       y_cov=self._jla['cov'])
+        
+        if 'bao_compilation' in self._experiments:
+            model = self._observables.d_BAO(self._bao_compilation['x'], parameters)
+            ln_likehood += self._ln_gaussian(y_fit=model,
+                                             y_target=self._bao_compilation['y'],
+                                             y_err=self._bao_compilation['y_err'])
 
         return ln_likehood
     

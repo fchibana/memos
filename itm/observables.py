@@ -1,4 +1,5 @@
 from scipy.integrate import quad
+import math
 import numpy as np
 
 from itm import constants
@@ -57,4 +58,37 @@ class Observables():
       M, h, omega0_b, omega0_cdm = params
 
       return 5.0 * np.log10(self._luminosity_distance(x, params)) + M
+    
+  def d_BAO(self, x, params):
+    """BAO distance ratio
+
+    Args:
+        x (_type_): _description_
+        params (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    M, h, omega0_b, omega0_cdm = params
+
+    Omega0_b = omega0_b/h**2
+    Omega0_cdm = omega0_cdm/h**2
+
+    omega0_m = (Omega0_b + Omega0_cdm)*h**2
+
+    # Sound horizon at the drag epoch in Mpc (Eisenstein & Hu)
+    # TODO: where did this come from??
+    rs = (44.5 * math.log(9.83 / omega0_m)) / math.sqrt(1. + 10 * pow(omega0_b, (3. / 4.)))
+    
+    c = constants.C * pow(10., -3)  # km/s
+    hubble = self._cosmology.hubble(x, params)  # km/s/Mpc
+    dc2 = self._comoving_distance(x, params)**2
+    
+    # dilation scale
+    dv = np.power((c * x / hubble) * dc2, 1./3.) 
+    
+    # There's a c factor in D_H, so D_V is in Mpc and d_BAO has no units  
+    d_bao = dv / rs
+        
+    return d_bao
     
