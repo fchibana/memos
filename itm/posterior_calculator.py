@@ -1,16 +1,19 @@
+# from matplotlib.cbook import flatten
 import numpy as np
-from math import pow, pi, sqrt
+# from math import pow, pi, sqrt
 
 # from itm.lcdm import hubble
 # from itm.lcdm import H
 from itm.lcdm import LCDM
-from itm.cosmo_functions import distance_modulus, cmb, d_BAO, wigglez, fap
+from itm.observables import Observables
+# from itm.cosmo_functions import distance_modulus, cmb, d_BAO, wigglez, fap
 
 class PosteriorCalculator:
 
     def __init__(self, experiments) -> None:
         self._experiments = experiments
         self._cosmology = LCDM()
+        self._observables = Observables(self._cosmology)
         
         # TODO: use DataLoader class
         if 'local_hubble' in experiments:
@@ -27,11 +30,16 @@ class PosteriorCalculator:
             self._cosmic_chronometers = {'x': x,
                                          'y': y,
                                          'y_err': y_err}
-            
-        # TODO: pass cosmology class
-            
         
-    
+        if 'jla' in experiments:
+            print("Loading jla data")
+            
+            x, y = np.loadtxt("data/jla_mub.txt", comments='#', unpack=True)
+            flatten_cov = np.loadtxt("data/jla_mub_covmatrix.dat")
+            self._jla = {'x': x,
+                         'y': y,
+                         'cov': flatten_cov}
+
     def ln_posterior(self, parameters):
         ln_priors = self._ln_prior(parameters)
         
@@ -71,9 +79,28 @@ class PosteriorCalculator:
             ln_likehood += self._ln_gaussian(y_fit=model,
                                              y_target=self._cosmic_chronometers['y'],
                                              y_err=self._cosmic_chronometers['y_err'])
-        
+            
+        if 'jla' in self._experiments:
+            # model = self._cosmology.distance_modulus(x, params)
+            model = self._observables.distance_modulus(self._jla['x'], parameters)
+            ln_likehood += self._ln_multival_gaussian(y_fit=model,
+                                                      y_target=self._jla['y'],
+                                                      y_cov=self._jla['cov'])
+
         return ln_likehood
     
     def _ln_gaussian(self, y_fit, y_target, y_err):
         inv_sigma2 = 1.0 / y_err**2
         return -0.5 * (np.sum((y_target - y_fit)**2 * inv_sigma2 - np.log(inv_sigma2)))
+    
+    def _ln_multival_gaussian(self, y_fit, y_target, y_cov):
+        
+        cov = y_cov.reshape((y_target.shape[0], y_target.shape[0]))
+        inv_cov = np.linalg.inv(cov)
+        det_inv_cov = np.linalg.det(inv_cov)
+        
+        r = y_target - y_fit
+        chi2 = np.dot(r, np.dot(inv_cov, r))
+
+        return -0.5 * (chi2 - np.log(det_inv_cov))
+        
