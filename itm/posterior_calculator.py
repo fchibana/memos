@@ -47,6 +47,14 @@ class PosteriorCalculator:
                                      'y': y,
                                      'y_err': y_err}
 
+        if 'bao_wigglez' in experiments:
+            print("Loading bao_wigglez data")
+            x, y, y_err = np.loadtxt("data/wigglez.dat", comments='#', unpack=True )
+            flatten_inv_cov = np.loadtxt("data/wigglez_invcovmat.dat")
+            self._bao_wigglez = {'x': x,
+                                 'y': y,
+                                 'inv_cov': flatten_inv_cov}
+
     def ln_posterior(self, parameters):
         ln_priors = self._ln_prior(parameters)
         
@@ -98,6 +106,13 @@ class PosteriorCalculator:
             ln_likehood += self._ln_gaussian(y_fit=model,
                                              y_target=self._bao_compilation['y'],
                                              y_err=self._bao_compilation['y_err'])
+        
+        if 'bao_wigglez' in self._experiments:
+            model = self._observables.d_bao_wigglez(self._bao_wigglez['x'], parameters)
+            ln_likehood += self._ln_multival_gaussian(y_fit=model,
+                                                      y_target=self._bao_wigglez['y'],
+                                                      y_cov=self._bao_wigglez['inv_cov'],
+                                                      is_inv_cov=True)
 
         return ln_likehood
     
@@ -105,10 +120,14 @@ class PosteriorCalculator:
         inv_sigma2 = 1.0 / y_err**2
         return -0.5 * (np.sum((y_target - y_fit)**2 * inv_sigma2 - np.log(inv_sigma2)))
     
-    def _ln_multival_gaussian(self, y_fit, y_target, y_cov):
+    def _ln_multival_gaussian(self, y_fit, y_target, y_cov, is_inv_cov=False):
         
-        cov = y_cov.reshape((y_target.shape[0], y_target.shape[0]))
-        inv_cov = np.linalg.inv(cov)
+        # wigglez has inverse covariance matrix
+        if (is_inv_cov):
+            inv_cov = y_cov.reshape((y_target.shape[0], y_target.shape[0]))
+        else:
+            cov = y_cov.reshape((y_target.shape[0], y_target.shape[0]))
+            inv_cov = np.linalg.inv(cov)
         det_inv_cov = np.linalg.det(inv_cov)
         
         r = y_target - y_fit

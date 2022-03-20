@@ -59,6 +59,25 @@ class Observables():
 
       return 5.0 * np.log10(self._luminosity_distance(x, params)) + M
     
+  def _sound_horizon(self, params):
+    """Sound horizon at the drag epoch in Mpc (Eisenstein & Hu)
+
+    Args:
+        params (_type_): _description_
+    """
+    M, h, omega0_b, omega0_cdm = params
+
+    Omega0_b = omega0_b/h**2
+    Omega0_cdm = omega0_cdm/h**2
+
+    omega0_m = (Omega0_b + Omega0_cdm)*h**2
+
+    # TODO: where did this come from??
+    # Sound horizon at the drag epoch in Mpc (Eisenstein & Hu)
+    r_d = (44.5 * math.log(9.83 / omega0_m)) / math.sqrt(1. + 10 * pow(omega0_b, (3. / 4.)))
+    
+    return r_d
+
   def d_BAO(self, x, params):
     """BAO distance ratio
 
@@ -69,26 +88,35 @@ class Observables():
     Returns:
         _type_: _description_
     """
-    M, h, omega0_b, omega0_cdm = params
+    # M, h, omega0_b, omega0_cdm = params
 
-    Omega0_b = omega0_b/h**2
-    Omega0_cdm = omega0_cdm/h**2
+    # Omega0_b = omega0_b/h**2
+    # Omega0_cdm = omega0_cdm/h**2
 
-    omega0_m = (Omega0_b + Omega0_cdm)*h**2
+    # omega0_m = (Omega0_b + Omega0_cdm)*h**2
 
     # Sound horizon at the drag epoch in Mpc (Eisenstein & Hu)
     # TODO: where did this come from??
-    rs = (44.5 * math.log(9.83 / omega0_m)) / math.sqrt(1. + 10 * pow(omega0_b, (3. / 4.)))
+    # rs = (44.5 * math.log(9.83 / omega0_m)) / math.sqrt(1. + 10 * pow(omega0_b, (3. / 4.)))
+    rs = self._sound_horizon(params)
     
     c = constants.C * pow(10., -3)  # km/s
     hubble = self._cosmology.hubble(x, params)  # km/s/Mpc
     dc2 = self._comoving_distance(x, params)**2
-    
-    # dilation scale
-    dv = np.power((c * x / hubble) * dc2, 1./3.) 
+    dv = np.power((c * x / hubble) * dc2, 1./3.)  # dilation scale
+    rs = self._sound_horizon(params)  # sound horizon
     
     # There's a c factor in D_H, so D_V is in Mpc and d_BAO has no units  
     d_bao = dv / rs
         
     return d_bao
+  
+  def d_bao_wigglez(self, x, params):
+    # Fiducial sound horizon at the drag epoch in Mpc used by the WiggleZ (1401.0358)
+    r_fid = 152.3
+    
+    d_bao = self.d_BAO(x, params)
+    d_bao_wigglez = r_fid * d_bao
+
+    return d_bao_wigglez
     
