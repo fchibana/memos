@@ -10,7 +10,11 @@ class LCDM:
         pass
 
     def hubble(self, z, params):
-        M, h, omega0_b, omega0_cdm = params
+        # M, h, omega0_b, omega0_cdm = params
+        # M = params[0]
+        h = params[1]
+        omega0_b = params[2]
+        omega0_cdm = params[3]
 
         H0 = 100. * h
         Omega0_b = omega0_b/h**2

@@ -23,7 +23,11 @@ class PosteriorCalculator:
         return ln_priors + self._ln_likelihood(parameters)
 
     def _ln_prior(self, parameters):
-        M, h, omega0_b, omega0_cdm = parameters
+        # M, h, omega0_b, omega0_cdm = parameters
+        # M = parameters[0]
+        h = parameters[1]
+        omega0_b = parameters[2]
+        omega0_cdm = parameters[3]
 
         H0 = 100. * h
         Omega0_b = omega0_b/h**2
@@ -38,7 +42,11 @@ class PosteriorCalculator:
         return -np.inf
 
     def _ln_likelihood(self, parameters):
-        M, h, omega0_b, omega0_cdm = parameters
+        # M, h, omega0_b, omega0_cdm = parameters
+        # M = parameters[0]
+        h = parameters[1]
+        # omega0_b = parameters[2]
+        # omega0_cdm = parameters[3]
 
         H0 = 100. * h
         # Omega0_b = omega0_b/h**2

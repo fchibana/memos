@@ -25,14 +25,22 @@ class Observables():
     #   self._hubble0 = 100. * self._h
 
     def _inv_E(self, x, params):
-        M, h, omega0_b, omega0_cdm = params
+        # M, h, omega0_b, omega0_cdm = params
+        # M = params[0]
+        h = params[1]
+        # omega0_b = params[2]
+        # omega0_cdm = params[3]
 
         H0 = 100. * h
         return H0/self._cosmology.hubble(x, params)
 
     def _comoving_distance(self, x, params):
         assert x.ndim == 1, f"input must be vector. got: {x.ndim}"
-        M, h, omega0_b, omega0_cdm = params
+        # M, h, omega0_b, omega0_cdm = params
+        # M = params[0]
+        h = params[1]
+        # omega0_b = params[2]
+        # omega0_cdm = params[3]
 
         H0 = 100. * h
         c = constants.C * pow(10., -3)
@@ -54,7 +62,11 @@ class Observables():
         return (1. + x) * self._comoving_distance(x, params)
 
     def distance_modulus(self, x, params):
-        M, h, omega0_b, omega0_cdm = params
+        # M, h, omega0_b, omega0_cdm = params
+        M = params[0]
+        # h = params[1]
+        # omega0_b = params[2]
+        # omega0_cdm = params[3]
 
         return 5.0 * np.log10(self._luminosity_distance(x, params)) + M
 
@@ -64,7 +76,11 @@ class Observables():
         Args:
             params (_type_): _description_
         """
-        M, h, omega0_b, omega0_cdm = params
+        # M, h, omega0_b, omega0_cdm = params
+        # M = params[0]
+        h = params[1]
+        omega0_b = params[2]
+        omega0_cdm = params[3]
 
         Omega0_b = omega0_b/h**2
         Omega0_cdm = omega0_cdm/h**2
