@@ -1,5 +1,6 @@
 import numpy as np
 
+from itm.data_loader import DataLoader
 from itm.lcdm import LCDM
 from itm.observables import Observables
 
@@ -8,49 +9,10 @@ class PosteriorCalculator:
 
     def __init__(self, experiments) -> None:
         self._experiments = experiments
+        self._data = DataLoader(experiments)
+        # TODO pass as constructor arguments
         self._cosmology = LCDM()
         self._observables = Observables(self._cosmology)
-
-        # TODO: use DataLoader class
-        if 'local_hubble' in experiments:
-            print("Loading local_hubble data")
-
-            y, y_err = np.loadtxt("data/H0.txt", comments='#', unpack=True)
-            self._local_hubble = {'y': y,
-                                  'y_err': y_err}
-
-        if 'cosmic_chronometers' in experiments:
-            print("Loading cosmic_chronometers data")
-
-            x, y, y_err = np.loadtxt("data/hubble.txt", unpack=True)
-            self._cosmic_chronometers = {'x': x,
-                                         'y': y,
-                                         'y_err': y_err}
-
-        if 'jla' in experiments:
-            print("Loading jla data")
-
-            x, y = np.loadtxt("data/jla_mub.txt", comments='#', unpack=True)
-            flatten_cov = np.loadtxt("data/jla_mub_covmatrix.dat")
-            self._jla = {'x': x,
-                         'y': y,
-                         'cov': flatten_cov}
-
-        if 'bao_compilation' in experiments:
-            print("Loading bao_compilation data")
-            x, y, y_err = np.loadtxt("data/bao.txt", comments='#', unpack=True)
-            self._bao_compilation = {'x': x,
-                                     'y': y,
-                                     'y_err': y_err}
-
-        if 'bao_wigglez' in experiments:
-            print("Loading bao_wigglez data")
-            x, y, y_err = np.loadtxt(
-                "data/wigglez.dat", comments='#', unpack=True)
-            flatten_inv_cov = np.loadtxt("data/wigglez_invcovmat.dat")
-            self._bao_wigglez = {'x': x,
-                                 'y': y,
-                                 'inv_cov': flatten_inv_cov}
 
     def ln_posterior(self, parameters):
         ln_priors = self._ln_prior(parameters)
@@ -86,41 +48,42 @@ class PosteriorCalculator:
 
         if 'local_hubble' in self._experiments:
             model = H0
-            ln_likehood += self._ln_gaussian(y_fit=model,
-                                             y_target=self._local_hubble['y'],
-                                             y_err=self._local_hubble['y_err'])
+            ln_likehood += self._ln_gaussian(
+                y_fit=model,
+                y_target=self._data._local_hubble['y'],
+                y_err=self._data._local_hubble['y_err'])
 
         if 'cosmic_chronometers' in self._experiments:
             model = self._cosmology.hubble(
-                self._cosmic_chronometers['x'], parameters)
+                self._data._cosmic_chronometers['x'], parameters)
             ln_likehood += self._ln_gaussian(
                 y_fit=model,
-                y_target=self._cosmic_chronometers['y'],
-                y_err=self._cosmic_chronometers['y_err'])
+                y_target=self._data._cosmic_chronometers['y'],
+                y_err=self._data._cosmic_chronometers['y_err'])
 
         if 'jla' in self._experiments:
             model = self._observables.distance_modulus(
-                self._jla['x'], parameters)
+                self._data._jla['x'], parameters)
             ln_likehood += self._ln_multival_gaussian(
                 y_fit=model,
-                y_target=self._jla['y'],
-                y_cov=self._jla['cov'])
+                y_target=self._data._jla['y'],
+                y_cov=self._data._jla['cov'])
 
         if 'bao_compilation' in self._experiments:
             model = self._observables.d_BAO(
-                self._bao_compilation['x'], parameters)
+                self._data._bao_compilation['x'], parameters)
             ln_likehood += self._ln_gaussian(
                 y_fit=model,
-                y_target=self._bao_compilation['y'],
-                y_err=self._bao_compilation['y_err'])
+                y_target=self._data._bao_compilation['y'],
+                y_err=self._data._bao_compilation['y_err'])
 
         if 'bao_wigglez' in self._experiments:
             model = self._observables.d_bao_wigglez(
-                self._bao_wigglez['x'], parameters)
+                self._data._bao_wigglez['x'], parameters)
             ln_likehood += self._ln_multival_gaussian(
                 y_fit=model,
-                y_target=self._bao_wigglez['y'],
-                y_cov=self._bao_wigglez['inv_cov'],
+                y_target=self._data._bao_wigglez['y'],
+                y_cov=self._data._bao_wigglez['inv_cov'],
                 is_inv_cov=True)
 
         return ln_likehood
