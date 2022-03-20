@@ -1,18 +1,18 @@
 import numpy as np
 
 from itm.data_loader import DataLoader
-from itm.lcdm import LCDM
 from itm.observables import Observables
 
 
 class PosteriorCalculator:
 
-    def __init__(self, experiments) -> None:
+    def __init__(self, cosmology, experiments) -> None:
+        self._cosmology = cosmology
         self._experiments = experiments
-        self._data = DataLoader(experiments)
-        # TODO pass as constructor arguments
-        self._cosmology = LCDM()
+
         self._observables = Observables(self._cosmology)
+        self._data = DataLoader(experiments)
+        self._parameters = {}
 
     def ln_posterior(self, parameters):
         ln_priors = self._ln_prior(parameters)
