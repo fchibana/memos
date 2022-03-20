@@ -1,13 +1,14 @@
 import numpy as np
-from numpy.core.shape_base import vstack
+# from numpy.core.shape_base import vstack
 
 from itm import constants
+
 
 class LCDM:
 
     def __init__(self) -> None:
         pass
-    
+
     def hubble(self, z, params):
         M, h, omega0_b, omega0_cdm = params
 
@@ -38,5 +39,4 @@ class LCDM:
     #     z_max = 2.5
     #     z = np.linspace(0, z_max, 100)
     #     h = self.hubble(z)
-        
     #     return np.vstack((z, h))
