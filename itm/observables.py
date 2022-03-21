@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from itm import constants
-# from deprecated.lcdm import LCDM
 from itm.data_loader import DataLoader
 from itm.cosmology import Cosmology
 
@@ -141,32 +140,75 @@ class Visualizer(Observables):
         self._experiments = experiments
         self._data = DataLoader(experiments)
 
+    def show_local_hubble(self, parameters):
+        # dataset = "local_hubble"
+        data = self._data.get_local_hubble()
+        model = self._cosmology.hubble(x=0, parameters=parameters)
+        print("Local Hubble (H0)")
+        print("  H0_fit: ", model)
+        print("  H0_data(err): {} ({})".format(data["y"], data["y_err"]))
+        print("  Diff: {}".format(model - data["y"]))
+
     def show_cosmic_chronometers(self, parameters):
         dataset = "cosmic_chronometers"
-        if dataset not in self._experiments:
-            print(dataset + " data not loaded")
-            return
-
-        model = self._cosmology.hubble(self._data._cosmic_chronometers["x"], parameters)
+        data = self._data.get_cosmic_chronometers()
+        model = self._cosmology.hubble(data["x"], parameters)
 
         plt.errorbar(
-            self._data._cosmic_chronometers['x'],
-            self._data._cosmic_chronometers["y"],
-            yerr=self._data._cosmic_chronometers["y_err"],
-            fmt=".k", label="Data points")
-        plt.plot(self._data._cosmic_chronometers['x'], model , '-', label="UPDATE")
+            data["x"], data["y"], yerr=data["y_err"], fmt=".k", label="data points"
+        )
+        plt.plot(data["x"], model, "-", label=self._cosmology.get_name())
         plt.xlabel("$z$")
         plt.ylabel("$H(z)$ $[Mpc^{-2}]$")
-        plt.legend(loc='upper left', prop={'size': 11})
+        plt.legend(loc="upper left", prop={"size": 11})
         plt.grid(True)
+        plt.title(dataset)
         plt.show()
 
-    # def show_jla(self, parameters):
-    #     dataset = "jla"
-    #     if dataset not in self._experiments:
-    #         print(dataset + " data not loaded")
-    #         return
+    def show_jla(self, parameters):
+        dataset = "jla"
+        data = self._data.get_jla()
+        model = self.distance_modulus(data["x"], parameters)
+        plt.errorbar(
+            data["x"], data["y"], yerr=data["y_err"], fmt=".k", label="data points"
+        )
+        plt.plot(data["x"], model, "-", label=self._cosmology.get_name())
+        plt.xscale("log")
+        plt.xlabel("$z$")
+        plt.ylabel(r"$\mu(z)$ $[Mpc^{-2}]$")
+        plt.legend(loc="upper left", prop={"size": 11})
+        plt.grid(True)
+        plt.title(dataset)
+        plt.show()
 
-    #     model = self.distance_modulus(self._data._jla["x"], parameters)
-            
-        
+    def show_bao_compilation(self, parameters):
+        dataset = "bao_compilation"
+        data = self._data.get_bao_compilation()
+        model = self.d_BAO(data["x"], parameters)
+        plt.errorbar(
+            data["x"], data["y"], yerr=data["y_err"], fmt=".k", label="data points"
+        )
+        plt.plot(data["x"], model, "-", label=self._cosmology.get_name())
+        # plt.xscale("log")
+        plt.xlabel("$z$")
+        plt.ylabel(r"$D_V / r_s$")
+        plt.legend(loc="upper left", prop={"size": 11})
+        plt.grid(True)
+        plt.title(dataset)
+        plt.show()
+
+    def show_bao_wigglez(self, parameters):
+        dataset = "bao_wigglez"
+        data = self._data.get_bao_wigglez()
+        model = self.d_bao_wigglez(data["x"], parameters)
+        plt.errorbar(
+            data["x"], data["y"], yerr=data["y_err"], fmt=".k", label="data points"
+        )
+        plt.plot(data["x"], model, "-", label=self._cosmology.get_name())
+        # plt.xscale("log")
+        plt.xlabel("$z$")
+        plt.ylabel(r"$D_V$")
+        plt.legend(loc="upper left", prop={"size": 11})
+        plt.grid(True)
+        plt.title(dataset)
+        plt.show()
