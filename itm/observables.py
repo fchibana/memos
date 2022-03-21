@@ -1,13 +1,16 @@
 from scipy.integrate import quad
 import math
+import matplotlib.pyplot as plt
 import numpy as np
 
 from itm import constants
-from deprecated.lcdm import LCDM
+# from deprecated.lcdm import LCDM
+from itm.data_loader import DataLoader
+from itm.cosmology import Cosmology
 
 
 class Observables:
-    def __init__(self, cosmology: LCDM):
+    def __init__(self, cosmology: Cosmology):
 
         self._cosmology = cosmology
         # print("Constructing Observables")
@@ -129,3 +132,41 @@ class Observables:
         d_bao_wigglez = r_fid * d_bao
 
         return d_bao_wigglez
+
+
+class Visualizer(Observables):
+    def __init__(self, cosmology: Cosmology, experiments: list) -> None:
+        super().__init__(cosmology)
+        self._cosmology = cosmology
+        self._experiments = experiments
+        self._data = DataLoader(experiments)
+
+    def show_cosmic_chronometers(self, parameters):
+        dataset = "cosmic_chronometers"
+        if dataset not in self._experiments:
+            print(dataset + " data not loaded")
+            return
+
+        model = self._cosmology.hubble(self._data._cosmic_chronometers["x"], parameters)
+
+        plt.errorbar(
+            self._data._cosmic_chronometers['x'],
+            self._data._cosmic_chronometers["y"],
+            yerr=self._data._cosmic_chronometers["y_err"],
+            fmt=".k", label="Data points")
+        plt.plot(self._data._cosmic_chronometers['x'], model , '-', label="UPDATE")
+        plt.xlabel("$z$")
+        plt.ylabel("$H(z)$ $[Mpc^{-2}]$")
+        plt.legend(loc='upper left', prop={'size': 11})
+        plt.grid(True)
+        plt.show()
+
+    # def show_jla(self, parameters):
+    #     dataset = "jla"
+    #     if dataset not in self._experiments:
+    #         print(dataset + " data not loaded")
+    #         return
+
+    #     model = self.distance_modulus(self._data._jla["x"], parameters)
+            
+        
