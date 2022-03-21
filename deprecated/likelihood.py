@@ -2,7 +2,7 @@ import numpy as np
 # import pylab as pl
 from math import pow, pi, sqrt
 
-from itm.lcdm import H
+from deprecated.lcdm import H
 from deprecated.cosmo_functions import distance_modulus, cmb, d_BAO, wigglez, fap
 
 

@@ -4,7 +4,7 @@ import numpy as np
 from scipy.integrate import quad
 from math import sqrt, pow, log
 
-from itm.lcdm import H
+from deprecated.lcdm import H
 from itm import constants
 
 # import itm.lcdm 

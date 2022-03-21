@@ -5,7 +5,6 @@ from itm.observables import Observables
 
 
 class PosteriorCalculator:
-
     def __init__(self, cosmology, experiments) -> None:
         self._cosmology = cosmology
         self._experiments = experiments
@@ -29,13 +28,13 @@ class PosteriorCalculator:
         omega0_b = parameters[2]
         omega0_cdm = parameters[3]
 
-        H0 = 100. * h
-        Omega0_b = omega0_b/h**2
-        Omega0_cdm = omega0_cdm/h**2
+        H0 = 100.0 * h
+        Omega0_b = omega0_b / h**2
+        Omega0_cdm = omega0_cdm / h**2
 
-        prior_H0 = (60. < H0 < 80.)
-        prior_Omega0_b = (0.01 < Omega0_b < 0.10)
-        prior_Omega0_cdm = (0.10 < Omega0_cdm < 0.5)
+        prior_H0 = 60.0 < H0 < 80.0
+        prior_Omega0_b = 0.01 < Omega0_b < 0.10
+        prior_Omega0_cdm = 0.10 < Omega0_cdm < 0.5
 
         if prior_H0 and prior_Omega0_b and prior_Omega0_cdm:
             return 0
@@ -48,51 +47,56 @@ class PosteriorCalculator:
         # omega0_b = parameters[2]
         # omega0_cdm = parameters[3]
 
-        H0 = 100. * h
+        H0 = 100.0 * h
         # Omega0_b = omega0_b/h**2
         # Omega0_cdm = omega0_cdm/h**2
 
         ln_likehood = 0
 
-        if 'local_hubble' in self._experiments:
+        if "local_hubble" in self._experiments:
             model = H0
             ln_likehood += self._ln_gaussian(
                 y_fit=model,
-                y_target=self._data._local_hubble['y'],
-                y_err=self._data._local_hubble['y_err'])
+                y_target=self._data._local_hubble["y"],
+                y_err=self._data._local_hubble["y_err"],
+            )
 
-        if 'cosmic_chronometers' in self._experiments:
+        if "cosmic_chronometers" in self._experiments:
             model = self._cosmology.hubble(
-                self._data._cosmic_chronometers['x'], parameters)
+                self._data._cosmic_chronometers["x"], parameters
+            )
             ln_likehood += self._ln_gaussian(
                 y_fit=model,
-                y_target=self._data._cosmic_chronometers['y'],
-                y_err=self._data._cosmic_chronometers['y_err'])
+                y_target=self._data._cosmic_chronometers["y"],
+                y_err=self._data._cosmic_chronometers["y_err"],
+            )
 
-        if 'jla' in self._experiments:
-            model = self._observables.distance_modulus(
-                self._data._jla['x'], parameters)
+        if "jla" in self._experiments:
+            model = self._observables.distance_modulus(self._data._jla["x"], parameters)
             ln_likehood += self._ln_multival_gaussian(
-                y_fit=model,
-                y_target=self._data._jla['y'],
-                y_cov=self._data._jla['cov'])
+                y_fit=model, y_target=self._data._jla["y"], y_cov=self._data._jla["cov"]
+            )
 
-        if 'bao_compilation' in self._experiments:
+        if "bao_compilation" in self._experiments:
             model = self._observables.d_BAO(
-                self._data._bao_compilation['x'], parameters)
+                self._data._bao_compilation["x"], parameters
+            )
             ln_likehood += self._ln_gaussian(
                 y_fit=model,
-                y_target=self._data._bao_compilation['y'],
-                y_err=self._data._bao_compilation['y_err'])
+                y_target=self._data._bao_compilation["y"],
+                y_err=self._data._bao_compilation["y_err"],
+            )
 
-        if 'bao_wigglez' in self._experiments:
+        if "bao_wigglez" in self._experiments:
             model = self._observables.d_bao_wigglez(
-                self._data._bao_wigglez['x'], parameters)
+                self._data._bao_wigglez["x"], parameters
+            )
             ln_likehood += self._ln_multival_gaussian(
                 y_fit=model,
-                y_target=self._data._bao_wigglez['y'],
-                y_cov=self._data._bao_wigglez['inv_cov'],
-                is_inv_cov=True)
+                y_target=self._data._bao_wigglez["y"],
+                y_cov=self._data._bao_wigglez["inv_cov"],
+                is_inv_cov=True,
+            )
 
         return ln_likehood
 
@@ -108,7 +112,7 @@ class PosteriorCalculator:
 
     def _ln_multival_gaussian(self, y_fit, y_target, y_cov, is_inv_cov=False):
         # wigglez has inverse covariance matrix
-        if (is_inv_cov):
+        if is_inv_cov:
             inv_cov = y_cov.reshape((y_target.shape[0], y_target.shape[0]))
         else:
             cov = y_cov.reshape((y_target.shape[0], y_target.shape[0]))

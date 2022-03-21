@@ -3,10 +3,10 @@ import math
 import numpy as np
 
 from itm import constants
-from itm.lcdm import LCDM
+from deprecated.lcdm import LCDM
 
 
-class Observables():
+class Observables:
     def __init__(self, cosmology: LCDM):
 
         self._cosmology = cosmology
@@ -31,8 +31,8 @@ class Observables():
         # omega0_b = params[2]
         # omega0_cdm = params[3]
 
-        H0 = 100. * h
-        return H0/self._cosmology.hubble(x, params)
+        H0 = 100.0 * h
+        return H0 / self._cosmology.hubble(x, params)
 
     def _comoving_distance(self, x, params):
         assert x.ndim == 1, f"input must be vector. got: {x.ndim}"
@@ -42,8 +42,8 @@ class Observables():
         # omega0_b = params[2]
         # omega0_cdm = params[3]
 
-        H0 = 100. * h
-        c = constants.C * pow(10., -3)
+        H0 = 100.0 * h
+        c = constants.C * pow(10.0, -3)
 
         dc_i = []
         for x_i in x:
@@ -55,11 +55,11 @@ class Observables():
     def _angular_diameter_distance(self, x, params):
 
         # in Mpc
-        return self._comoving_distance(x, params) / (1. + x)
+        return self._comoving_distance(x, params) / (1.0 + x)
 
     def _luminosity_distance(self, x, params):
         # in Mpc
-        return (1. + x) * self._comoving_distance(x, params)
+        return (1.0 + x) * self._comoving_distance(x, params)
 
     def distance_modulus(self, x, params):
         # M, h, omega0_b, omega0_cdm = params
@@ -82,15 +82,16 @@ class Observables():
         omega0_b = params[2]
         omega0_cdm = params[3]
 
-        Omega0_b = omega0_b/h**2
-        Omega0_cdm = omega0_cdm/h**2
+        Omega0_b = omega0_b / h**2
+        Omega0_cdm = omega0_cdm / h**2
 
-        omega0_m = (Omega0_b + Omega0_cdm)*h**2
+        omega0_m = (Omega0_b + Omega0_cdm) * h**2
 
         # TODO: where did this come from??
         # Sound horizon at the drag epoch in Mpc (Eisenstein & Hu)
-        r_d = (44.5 * math.log(9.83 / omega0_m)) / \
-            math.sqrt(1. + 10 * pow(omega0_b, (3. / 4.)))
+        r_d = (44.5 * math.log(9.83 / omega0_m)) / math.sqrt(
+            1.0 + 10 * pow(omega0_b, (3.0 / 4.0))
+        )
 
         return r_d
 
@@ -108,10 +109,10 @@ class Observables():
         # Sound horizon at the drag epoch in Mpc (Eisenstein & Hu)
         rs = self._sound_horizon(params)
 
-        c = constants.C * pow(10., -3)  # km/s
+        c = constants.C * pow(10.0, -3)  # km/s
         hubble = self._cosmology.hubble(x, params)  # km/s/Mpc
-        dc2 = self._comoving_distance(x, params)**2
-        dv = np.power((c * x / hubble) * dc2, 1./3.)  # dilation scale
+        dc2 = self._comoving_distance(x, params) ** 2
+        dv = np.power((c * x / hubble) * dc2, 1.0 / 3.0)  # dilation scale
         rs = self._sound_horizon(params)  # sound horizon
 
         # There's a c factor in D_H, so D_V is in Mpc and d_BAO has no units
