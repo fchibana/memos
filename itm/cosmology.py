@@ -5,20 +5,25 @@ from itm import constants
 
 
 class Cosmology(metaclass=ABCMeta):
+    @property
     @abstractmethod
-    def rho_cdm(self, x, params):
+    def _name(self):
         pass
 
     @abstractmethod
-    def rho_de(self, x, params):
+    def rho_cdm(self, x, parameters):
         pass
 
-    def rho_radiation(self, x, params):
-        # M, h, omega0_b, omega0_cdm = params
-        # M = params[0]
-        h = params[1]
-        # omega0_b = params[2]
-        # omega0_cdm = params[3]
+    @abstractmethod
+    def rho_de(self, x, parameters):
+        pass
+
+    def rho_radiation(self, x, parameters):
+        # M, h, omega0_b, omega0_cdm = parameters
+        # M = parameters[0]
+        h = parameters[1]
+        # omega0_b = parameters[2]
+        # omega0_cdm = parameters[3]
 
         H0 = 100.0 * h
         # Omega0_b = omega0_b/h**2
@@ -29,10 +34,10 @@ class Cosmology(metaclass=ABCMeta):
         Omega0_g = constants.radiation_density(h)
         return Omega0_g * H0**2 * np.power(1.0 + x, 4.0)
 
-    def rho_baryons(self, x, params):
-        h = params[1]
-        omega0_b = params[2]
-        # omega0_cdm = params[3]
+    def rho_baryons(self, x, parameters):
+        h = parameters[1]
+        omega0_b = parameters[2]
+        # omega0_cdm = parameters[3]
 
         H0 = 100.0 * h
         Omega0_b = omega0_b / h**2
@@ -42,12 +47,12 @@ class Cosmology(metaclass=ABCMeta):
 
         return Omega0_b * H0**2 * np.power(1.0 + x, 3.0)
 
-    def hubble(self, x, params):
-        # M, h, omega0_b, omega0_cdm = params
-        # M = params[0]
-        # h = params[1]
-        # omega0_b = params[2]
-        # omega0_cdm = params[3]
+    def hubble(self, x, parameters):
+        # M, h, omega0_b, omega0_cdm = parameters
+        # M = parameters[0]
+        # h = parameters[1]
+        # omega0_b = parameters[2]
+        # omega0_cdm = parameters[3]
 
         # H0 = 100. * h
         # Omega0_b = omega0_b/h**2
@@ -56,20 +61,28 @@ class Cosmology(metaclass=ABCMeta):
         # Omega0_de = 1. - Omega0_g - Omega0_b - Omega0_cdm
 
         rho_tot = 0
-        rho_tot += self.rho_radiation(x, params)
-        rho_tot += self.rho_baryons(x, params)
-        rho_tot += self.rho_cdm(x, params)
-        rho_tot += self.rho_de(x, params)
+        rho_tot += self.rho_radiation(x, parameters)
+        rho_tot += self.rho_baryons(x, parameters)
+        rho_tot += self.rho_cdm(x, parameters)
+        rho_tot += self.rho_de(x, parameters)
 
         return np.sqrt(rho_tot)
 
 
 class LCDM(Cosmology):
-    def rho_cdm(self, x, params):
-        # M = params[0]
-        h = params[1]
-        # omega0_b = params[2]
-        omega0_cdm = params[3]
+    _name = "lcdm"
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def get_name(self) -> str:
+        return self._name
+
+    def rho_cdm(self, x, parameters):
+        # M = parameters[0]
+        h = parameters[1]
+        # omega0_b = parameters[2]
+        omega0_cdm = parameters[3]
 
         H0 = 100.0 * h
         # Omega0_b = omega0_b/h**2
@@ -79,11 +92,11 @@ class LCDM(Cosmology):
 
         return Omega0_cdm * H0**2 * np.power(1 + x, 3.0)
 
-    def rho_de(self, x, params):
-        # M = params[0]
-        h = params[1]
-        omega0_b = params[2]
-        omega0_cdm = params[3]
+    def rho_de(self, x, parameters):
+        # M = parameters[0]
+        h = parameters[1]
+        omega0_b = parameters[2]
+        omega0_cdm = parameters[3]
 
         H0 = 100.0 * h
         Omega0_b = omega0_b / h**2
