@@ -59,7 +59,7 @@ class PosteriorCalculator:
         if "local_hubble" in self._experiments:
             data = self._data.get_local_hubble()
             model = H0
-            ln_likehood += self._ln_gaussian(
+            ln_likehood += self._ln_gauss(
                 y_fit=model,
                 y_target=data["y"],
                 y_err=data["y_err"],
@@ -68,7 +68,7 @@ class PosteriorCalculator:
         if "cosmic_chronometers" in self._experiments:
             data = self._data.get_cosmic_chronometers()
             model = self._cosmology.hubble(data["x"], parameters)
-            ln_likehood += self._ln_gaussian(
+            ln_likehood += self._ln_gauss(
                 y_fit=model,
                 y_target=data["y"],
                 y_err=data["y_err"],
@@ -77,14 +77,14 @@ class PosteriorCalculator:
         if "jla" in self._experiments:
             data = self._data.get_jla()
             model = self._observables.distance_modulus(data["x"], parameters)
-            ln_likehood += self._ln_multival_gaussian(
+            ln_likehood += self._ln_multivariate_gauss(
                 y_fit=model, y_target=data["y"], y_cov=data["cov"]
             )
 
         if "bao_compilation" in self._experiments:
             data = self._data.get_bao_compilation()
             model = self._observables.d_BAO(data["x"], parameters)
-            ln_likehood += self._ln_gaussian(
+            ln_likehood += self._ln_gauss(
                 y_fit=model,
                 y_target=data["y"],
                 y_err=data["y_err"],
@@ -93,7 +93,7 @@ class PosteriorCalculator:
         if "bao_wigglez" in self._experiments:
             data = self._data.get_bao_wigglez()
             model = self._observables.d_bao_wigglez(data["x"], parameters)
-            ln_likehood += self._ln_multival_gaussian(
+            ln_likehood += self._ln_multivariate_gauss(
                 y_fit=model,
                 y_target=data["y"],
                 y_cov=data["cov"],
@@ -101,7 +101,7 @@ class PosteriorCalculator:
 
         return ln_likehood
 
-    def _ln_gaussian(self, y_fit, y_target, y_err):
+    def _ln_gauss(self, y_fit, y_target, y_err):
         inv_sigma2 = 1.0 / y_err**2
 
         r = y_target - y_fit
@@ -109,7 +109,7 @@ class PosteriorCalculator:
 
         return -0.5 * np.sum(chi2)
 
-    def _ln_multival_gaussian(self, y_fit, y_target, y_cov):
+    def _ln_multivariate_gauss(self, y_fit, y_target, y_cov):
         inv_cov = np.linalg.inv(y_cov)
         det_inv_cov = np.linalg.det(inv_cov)
 
