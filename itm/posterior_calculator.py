@@ -14,6 +14,9 @@ class PosteriorCalculator:
         self._parameters = {}
 
     def ln_posterior(self, parameters):
+        # print(type(parameters))     # ndarray
+        # print(parameters.shape)     # (4,)
+        # print(type(parameters[0]))  # np.float64
         ln_priors = self._ln_prior(parameters)
 
         if np.isinf(ln_priors):

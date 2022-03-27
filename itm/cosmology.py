@@ -68,15 +68,15 @@ class Cosmology(metaclass=ABCMeta):
 
         return np.sqrt(rho_tot)
 
+    def get_name(self) -> str:
+        return self._name
+
 
 class LCDM(Cosmology):
     _name = "lcdm"
 
     def __init__(self) -> None:
         super().__init__()
-
-    def get_name(self) -> str:
-        return self._name
 
     def rho_cdm(self, x, parameters):
         # M = parameters[0]
@@ -105,3 +105,40 @@ class LCDM(Cosmology):
         Omega0_de = 1.0 - Omega0_g - Omega0_b - Omega0_cdm
 
         return Omega0_de * H0**2
+
+
+class WCDM(Cosmology):
+    _name = "wcdm"
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def rho_cdm(self, x, parameters):
+        # M = parameters[0]
+        h = parameters[1]
+        # omega0_b = parameters[2]
+        omega0_cdm = parameters[3]
+        # w = parameters[4]
+
+        H0 = 100.0 * h
+        # Omega0_b = omega0_b/h**2
+        Omega0_cdm = omega0_cdm / h**2
+        # Omega0_g = constants.radiation_density(h)
+        # Omega0_de = 1. - Omega0_g - Omega0_b - Omega0_cdm
+
+        return Omega0_cdm * H0**2 * np.power(1.0 + x, 3.0)
+
+    def rho_de(self, x, parameters):
+        # M = parameters[0]
+        h = parameters[1]
+        omega0_b = parameters[2]
+        omega0_cdm = parameters[3]
+        w = parameters[4]
+
+        H0 = 100.0 * h
+        Omega0_b = omega0_b / h**2
+        Omega0_cdm = omega0_cdm / h**2
+        Omega0_g = constants.radiation_density(h)
+        Omega0_de = 1.0 - Omega0_g - Omega0_b - Omega0_cdm
+
+        return Omega0_de * H0**2 * np.power(1.0 + x, 3.0 * (1.0 + w))
