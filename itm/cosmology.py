@@ -15,6 +15,11 @@ class Cosmology(metaclass=ABCMeta):
     def _params_names(self):
         pass
 
+    @property
+    @abstractmethod
+    def _params_initial_guess(self):
+        pass
+
     @abstractmethod
     def rho_cdm(self, x, parameters):
         pass
@@ -25,6 +30,9 @@ class Cosmology(metaclass=ABCMeta):
 
     def get_name(self) -> str:
         return self._name
+
+    def get_initial_guess(self) -> list:
+        return self._params_initial_guess
 
     def rho_radiation(self, x, parameters):
         # M = parameters[0]
@@ -62,6 +70,7 @@ class Cosmology(metaclass=ABCMeta):
 class LCDM(Cosmology):
     _name = "lcdm"
     _params_names = ["M", "h", "omega_b", "omega_cdm"]
+    _params_initial_guess = [24.96, 0.69, 0.022, 0.12]  # TODO: update with best-fit
 
     def __init__(self) -> None:
         super().__init__()
@@ -95,6 +104,8 @@ class LCDM(Cosmology):
 class WCDM(Cosmology):
     _name = "wcdm"
     _params_names = ["M", "h", "omega_b", "omega_cdm", "w"]
+    # TODO: update with best-fit
+    _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99]
 
     def __init__(self) -> None:
         super().__init__()
