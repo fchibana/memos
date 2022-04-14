@@ -1,27 +1,22 @@
-import emcee
-import numpy as np
-
-
-def get_samples(sampler):
-    tau = sampler.get_autocorr_time()
-    burn_in = int(2 * np.max(tau))
-    thin = int(0.5 * np.min(tau))
-    samples = sampler.get_chain(discard=burn_in, flat=True, thin=thin)
-    log_prob_samples = sampler.get_log_prob(discard=burn_in, flat=True, thin=thin)
-
-    print("burn-in: {0}".format(burn_in))
-    print("thin: {0}".format(thin))
-    print("flat chain shape: {0}".format(samples.shape))
-    print("flat log prob shape: {0}".format(log_prob_samples.shape))
-
-    return samples
+import itm.cosmology
+from itm.estimator import Estimator
 
 
 def main():
     fname = "results/chains_210926.h5"
-    sampler = emcee.backends.HDFBackend(fname)
+    cosmo = itm.cosmology.LCDM()
+    experiments = [
+        "local_hubble",
+        "cosmic_chronometers",
+        "jla",
+        "bao_compilation",
+        "bao_wigglez",
+    ]
 
-    get_samples(sampler)
+    estimator = Estimator(cosmo, experiments)
+    estimator.load_chains(fname)
+    estimator.get_samples()
+    estimator.plot()
 
 
 if __name__ == "__main__":
