@@ -10,6 +10,11 @@ class Cosmology(metaclass=ABCMeta):
     def _name(self):
         pass
 
+    @property
+    @abstractmethod
+    def _params_names(self):
+        pass
+
     @abstractmethod
     def rho_cdm(self, x, parameters):
         pass
@@ -53,12 +58,10 @@ class Cosmology(metaclass=ABCMeta):
 
         return np.sqrt(rho_tot)
 
-    def get_name(self) -> str:
-        return self._name
-
 
 class LCDM(Cosmology):
     _name = "lcdm"
+    _params_names = ["M", "h", "omega_b", "omega_cdm"]
 
     def __init__(self) -> None:
         super().__init__()
@@ -91,6 +94,7 @@ class LCDM(Cosmology):
 
 class WCDM(Cosmology):
     _name = "wcdm"
+    _params_names = ["M", "h", "omega_b", "omega_cdm", "w"]
 
     def __init__(self) -> None:
         super().__init__()
