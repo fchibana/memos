@@ -82,8 +82,8 @@ def main():
         "bao_compilation",
         "bao_wigglez",
     ]
-    cosmo = itm.cosmology.LCDM()
-    # cosmo = itm.cosmology.WCDM()
+    # cosmo = itm.cosmology.LCDM()
+    cosmo = itm.cosmology.WCDM()
 
     estimator = Estimator(model=cosmo, experiments=experiments)
     estimator.run()

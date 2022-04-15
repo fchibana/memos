@@ -3,7 +3,7 @@ from itm.estimator import Estimator
 
 
 def main():
-    fname = "results/chains_210926.h5"
+    fname = "results/lcdm_20220414_183229"
     cosmo = itm.cosmology.LCDM()
     experiments = [
         "local_hubble",
@@ -15,8 +15,19 @@ def main():
 
     estimator = Estimator(cosmo, experiments)
     estimator.load_chains(fname)
-    estimator.get_samples()
-    estimator.plot()
+    # estimator.get_samples()
+
+    bf = estimator.get_best_fit(save=True)
+    print("\nBest-fit results:")
+    print(bf)
+
+    info_crit = estimator.information_criterion(save=True)
+    print("\nInformation criteria results:")
+    print(info_crit)
+
+    # estimator.plot(save=True)
+
+    print("\nDONE!\n")
 
 
 if __name__ == "__main__":

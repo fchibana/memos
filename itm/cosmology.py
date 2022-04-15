@@ -31,6 +31,9 @@ class Cosmology(metaclass=ABCMeta):
     def get_name(self) -> str:
         return self._name
 
+    def get_params_names(self) -> list:
+        return self._params_names
+
     def get_initial_guess(self) -> list:
         return self._params_initial_guess
 

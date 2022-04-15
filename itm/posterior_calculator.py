@@ -11,6 +11,7 @@ class PosteriorCalculator:
 
         self._observables = Observables(self._cosmology)
         self._data = DataLoader(experiments)
+        self._n_data = self._data.get_n_data()
         self._parameters = {}
 
     def ln_posterior(self, parameters):
@@ -117,3 +118,6 @@ class PosteriorCalculator:
         chi2 = np.dot(r, np.dot(inv_cov, r))
 
         return -0.5 * (chi2 - np.log(det_inv_cov))
+
+    def get_n_data(self):
+        return self._n_data

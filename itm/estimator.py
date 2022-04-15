@@ -1,10 +1,12 @@
-import corner
 from datetime import datetime
+import math
 import pathlib
 
+import corner
 import emcee
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 from itm.cosmology import Cosmology
 from itm.posterior_calculator import PosteriorCalculator
@@ -14,11 +16,14 @@ class Estimator:
     def __init__(self, model: Cosmology, experiments: list) -> None:
         self._model = model
         self._experiments = experiments
-        self._chains = None
-        self._samples = None
+
+        self._results_dir = None
         self._nwalkers = None
         self._ndim = None
-        self._results_dir = None
+
+        self._chains = None
+        self._samples = None
+        self._best_fit = None
 
     def run(self, results_dir=None, nwalkers=32, max_iter=50000):
         self._nwalkers = nwalkers
@@ -94,14 +99,21 @@ class Estimator:
 
         return sampler
 
-    def load_chains(self, filename):
-        self._chains = emcee.backends.HDFBackend(filename)
+    def load_chains(self, results_dir):
+        self._results_dir = pathlib.Path(results_dir)
+        fname = self._results_dir / "chains.h5"
+        self._chains = emcee.backends.HDFBackend(fname)
         self._nwalkers, self._ndim = self._chains.shape
 
         if self._ndim != len(self._model.get_initial_guess()):
-            raise Exception("ndim for chains and model are different")
+            raise Exception(
+                "Oops, number of parameters in chains and model are different."
+            )
 
     def get_samples(self):
+        if self._chains is None:
+            raise Exception("Oops, no chains to process")
+
         tau = self._chains.get_autocorr_time()
         burn_in = int(2 * np.max(tau))
         thin = int(0.5 * np.min(tau))
@@ -110,22 +122,24 @@ class Estimator:
             discard=burn_in, flat=True, thin=thin
         )
 
-        print(f"burn-in: {burn_in}")
-        print(f"thin: {thin}")
-        print(f"flat chain shape: {self._samples.shape}")
-        print(f"flat log prob shape: {log_prob_samples.shape}")
+        print("\nProcessing chains:")
+        print(f"  burn-in: {burn_in}")
+        print(f"  thin: {thin}")
+        print(f"  flat chain shape: {self._samples.shape}")
+        print(f"  flat log prob shape: {log_prob_samples.shape}")
 
         return self._samples
 
-    def plot(self):
+    def plot(self, save=False):
 
         if self._samples is None:
-            print("No samples to plot")
-            return
+            print("Oops, no samples to plot. Let me get that for ya'.")
+            self.get_samples()
 
         fig = corner.corner(
             self._samples,
             # labels=["M", "$h$", "$\Omega_{b} h^2$", "$\Omega_{c} h^2$", "$w$"],
+            label=self._model.get_params_names(),
             quantiles=(0.16, 0.5, 0.84),
             show_titles=True,
             title_kwargs={"fontsize": 12},
@@ -134,5 +148,79 @@ class Estimator:
             f"{self._model.get_name()} with {self._nwalkers} walkers and xx steps"
         )
         plt.show()
-        # TODO: option to save plot
+
+        if save:
+            fname = self._results_dir / "plot.png"
+            fig.savefig(fname)
+
         return fig
+
+    def get_best_fit(self, save=False):
+        if self._samples is None:
+            print("Oops, no samples loaded. Let me get that for ya'.")
+            self.get_samples()
+
+        one_sigma_up = np.quantile(self._samples, q=0.84, axis=0)
+        mean = np.quantile(self._samples, q=0.5, axis=0)
+        one_sigma_down = np.quantile(self._samples, q=0.15, axis=0)
+
+        err_up = one_sigma_up - mean
+        err_down = mean - one_sigma_down
+
+        bf = pd.DataFrame(
+            [mean, err_up, err_down],
+            index=["best_fit", "err_up", "err_down"],
+            columns=self._model.get_params_names(),
+        )
+
+        self._best_fit = bf.transpose()
+
+        # print("\nBest-fit results:")
+        # print(self._best_fit)
+
+        if save:
+            fname = self._results_dir / "best_fit.csv"
+            self._best_fit.to_csv(fname)
+
+        return self._best_fit
+
+    def information_criterion(self, save=False):
+
+        if self._best_fit is None:
+            print("Oops, no best fit. Let be get that for ya'.")
+            self.get_best_fit(save=save)
+
+        prob = PosteriorCalculator(cosmology=self._model, experiments=self._experiments)
+        n_data = prob.get_n_data()
+
+        chi2 = -2.0 * prob._ln_likelihood(self._best_fit["best_fit"])
+        red_chi2 = chi2 / (n_data - self._ndim)
+        aic = chi2 + 2.0 * self._ndim
+        bic = chi2 + self._ndim * math.log(n_data)
+
+        info_crit = pd.DataFrame(
+            {
+                # "model": [self._model.get_name()],
+                "n_parameters": [self._ndim],
+                "n_data": [n_data],
+                "chi2": [chi2],
+                "reduced_chi2": [red_chi2],
+                "aic": [aic],
+                "bic": [bic],
+            },
+            index=[self._model.get_name()],
+        )
+
+        # print("\nInformation criteria results:")
+        # print(info_crit)
+
+        # save to disk
+        if save:
+            fname = self._results_dir / "info_crit.csv"
+            info_crit.to_csv(fname, index=False)
+        return info_crit
+
+    def analysis(self, save=False):
+        self.get_best_fit(save=save)
+        self.information_criterion(save=save)
+        self.plot(save=save)
