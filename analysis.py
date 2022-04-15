@@ -3,7 +3,7 @@ from itm.estimator import Estimator
 
 
 def main():
-    fname = "results/lcdm_20220414_183229"
+    fname = "results/lcdm_20220415_175943"
     cosmo = itm.cosmology.LCDM()
     experiments = [
         "local_hubble",
@@ -25,7 +25,7 @@ def main():
     print("\nInformation criteria results:")
     print(info_crit)
 
-    # estimator.plot(save=True)
+    estimator.plot(save=True)
 
     print("\nDONE!\n")
 

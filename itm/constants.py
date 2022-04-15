@@ -11,7 +11,7 @@ H_PLANCK = 6.62606896e-34  # Planck's constant (m^2 kg / s)
 # Stefan-Boltzmann constant (Kg / K^4 / s^3)
 SIGMA_B = 2.0 * pow(PI, 5) * pow(K_B, 4) / 15.0 / pow(H_PLANCK, 3) / pow(C, 2)
 
-ROOT_DIR = "/Users/fabio/code/fchibana/tachyons"
+# ROOT_DIR = "/Users/fabio/code/fchibana/tachyons"
 
 
 def radiation_density(h):
