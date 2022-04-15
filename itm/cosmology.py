@@ -21,6 +21,10 @@ class Cosmology(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def get_prior(self, parameters):
+        pass
+
+    @abstractmethod
     def rho_cdm(self, x, parameters):
         pass
 
@@ -73,10 +77,30 @@ class Cosmology(metaclass=ABCMeta):
 class LCDM(Cosmology):
     _name = "lcdm"
     _params_names = ["M", "h", "omega_b", "omega_cdm"]
-    _params_initial_guess = [24.96, 0.69, 0.022, 0.12]  # TODO: update with best-fit
+    _params_initial_guess = [25.01, 0.71, 0.025, 0.12]
 
     def __init__(self) -> None:
         super().__init__()
+
+    def get_prior(self, parameters):
+        M = parameters[0]
+        h = parameters[1]
+        omega0_b = parameters[2]
+        omega0_cdm = parameters[3]
+
+        H0 = 100.0 * h
+        Omega0_b = omega0_b / h**2
+        Omega0_cdm = omega0_cdm / h**2
+
+        p = np.array([M, H0, Omega0_b, Omega0_cdm])
+
+        upper_bound = np.array([30.0, 80.0, 0.10, 0.5])
+        lower_bound = np.array([20.0, 60.0, 0.01, 0.1])
+
+        if np.all(p > lower_bound) and np.all(p < upper_bound):
+            return 0.0
+        else:
+            return -np.inf
 
     def rho_cdm(self, x, parameters):
         # M = parameters[0]
@@ -112,6 +136,27 @@ class WCDM(Cosmology):
 
     def __init__(self) -> None:
         super().__init__()
+
+    def get_prior(self, parameters):
+        M = parameters[0]
+        h = parameters[1]
+        omega0_b = parameters[2]
+        omega0_cdm = parameters[3]
+        w = parameters[4]
+
+        H0 = 100.0 * h
+        Omega0_b = omega0_b / h**2
+        Omega0_cdm = omega0_cdm / h**2
+
+        p = np.array([M, H0, Omega0_b, Omega0_cdm, w])
+
+        upper_bound = np.array([30.0, 80.0, 0.10, 0.5, -0.5])
+        lower_bound = np.array([20.0, 60.0, 0.01, 0.1, -1.5])
+
+        if np.all(p > lower_bound) and np.all(p < upper_bound):
+            return 0.0
+        else:
+            return -np.inf
 
     def rho_cdm(self, x, parameters):
         # M = parameters[0]
