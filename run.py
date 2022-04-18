@@ -12,7 +12,8 @@ def main():
         "bao_wigglez",
     ]
     # cosmo = itm.cosmology.LCDM()
-    cosmo = itm.cosmology.WCDM()
+    # cosmo = itm.cosmology.WCDM()
+    cosmo = itm.cosmology.IDE2()
 
     estimator = Estimator(model=cosmo, experiments=experiments)
     estimator.run(nwalkers=16)
