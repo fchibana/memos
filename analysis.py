@@ -3,8 +3,9 @@ from itm.estimator import Estimator
 
 
 def main():
-    fname = "results/lcdm_20220415_175943"
-    cosmo = itm.cosmology.LCDM()
+    fname = "results/ide2_20220418_183028"
+    # cosmo = itm.cosmology.LCDM()
+    cosmo = itm.cosmology.IDE2()
     experiments = [
         "local_hubble",
         "cosmic_chronometers",
