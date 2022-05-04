@@ -25,6 +25,15 @@ class PosteriorCalculator:
         if np.isinf(ln_priors):
             return -np.inf
 
+        # make sure energy density is positive
+        x = np.linspace(0, 20, 11)
+        if np.any(self._cosmology.rho_de(x, parameters) < 0):
+            # print("Negative rho_de. Skipping")
+            return -np.inf
+        if np.any(self._cosmology.rho_cdm(x, parameters) < 0):
+            # print("Negative rho_cdm. Skipping")
+            return -np.inf
+
         return ln_priors + self._ln_likelihood(parameters)
 
     def _ln_likelihood(self, parameters):
