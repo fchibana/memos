@@ -73,7 +73,7 @@ class Estimator:
         # This will be useful to testing convergence
         old_tau = np.inf
 
-        # Now we'll sample for up to max_n steps
+        # Now we'll sample for up to max_iter steps
         for sample in sampler.sample(walkers_ic, iterations=max_iter, progress=True):
             # Only check convergence every 100 steps
             step = sampler.iteration
@@ -89,6 +89,7 @@ class Estimator:
             autocorr_index += 1
 
             # Check convergence
+            # TODO(me): check these conditions
             converged = np.all(tau * 100 < sampler.iteration)
             converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
             if converged:

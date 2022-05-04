@@ -3,7 +3,7 @@ from itm.estimator import Estimator
 
 
 def main():
-    fname = "results/ide2_20220418_183028"
+    fname = "results/ide2_20220503_063855"
     # cosmo = itm.cosmology.LCDM()
     cosmo = itm.cosmology.IDE2()
     experiments = [

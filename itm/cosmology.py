@@ -245,12 +245,13 @@ class IDE2(Cosmology):
         Omega0_g = constants.radiation_density(h)
         Omega0_de = 1.0 - Omega0_g - Omega0_b - Omega0_cdm
 
-        rho_bare = Omega0_de * H0**2 * np.power(1.0 + x, 3.0 * (1.0 + w))
-        rho_coup = (
-            (beta / (beta + w))
-            * Omega0_cdm
-            * H0**2
-            * (np.power(1.0 + x, 3.0 * (1.0 + w)) - np.power(1 + x, 3.0 * (1.0 - beta)))
-        )
+        de_factor = Omega0_de * H0**2
+        coup_factor = (beta / (beta + w)) * Omega0_cdm * H0**2
+
+        de_evol = np.power(1.0 + x, 3.0 * (1.0 + w))
+        coup_evol = np.power(1 + x, 3.0 * (1.0 - beta))
+
+        rho_bare = de_factor * de_evol
+        rho_coup = coup_factor * (de_evol - coup_evol)
 
         return rho_bare + rho_coup
