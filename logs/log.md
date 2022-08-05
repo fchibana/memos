@@ -1,2 +1,0 @@
-- `1.0 - dphi**2` becomes negative
-- how's the evolution of phi, dphi, in the old implementation?
