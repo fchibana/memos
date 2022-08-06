@@ -14,6 +14,12 @@ SIGMA_B = 2.0 * pow(PI, 5) * pow(K_B, 4) / 15.0 / pow(H_PLANCK, 3) / pow(C, 2)
 # ROOT_DIR = "/Users/fabio/code/fchibana/tachyons"
 
 
+def get_omega0_g():
+    return (4.0 * SIGMA_B / C * pow(T_CMB, 4.0)) / (
+        3.0 * C * C * 1.0e10 / MPC_PER_M / MPC_PER_M / 8.0 / PI / G
+    )
+
+
 def radiation_density(h):
     """Current radiation energy density Omega^0_g
 
@@ -23,6 +29,8 @@ def radiation_density(h):
     Returns:
         [double]: Current Omega_g
     """
-    return (4.0 * SIGMA_B / C * pow(T_CMB, 4.0)) / (
-        3.0 * C * C * 1.0e10 * h * h / MPC_PER_M / MPC_PER_M / 8.0 / PI / G
-    )
+    # return (4.0 * SIGMA_B / C * pow(T_CMB, 4.0)) / (
+    #     3.0 * C * C * 1.0e10 * h * h / MPC_PER_M / MPC_PER_M / 8.0 / PI / G
+    # )
+
+    return get_omega0_g() / h**2
