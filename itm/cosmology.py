@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from itm import constants
+from itm.itm_solver import ITMSolver
 
 
 class Cosmology(metaclass=ABCMeta):
@@ -324,65 +325,34 @@ class IDE2(Cosmology):
 
 class ITM(Cosmology):
     _name = "itm"
-    # _params_names = ["M", "h", "omega_b", "omega_cdm", "w", "beta"]
-    # _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99, 0.0]
+    _params_names = ["M", "h", "omega_b", "omega_cdm", "w", "beta", "phi0"]
+    _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99, 0.0, 0.05]
 
-    def __init__(self) -> None:
+    def __init__(self, parameters: list) -> None:
         super().__init__()
 
-    # def get_prior(self, parameters):
-    #     # M, h, omega0_b, omega0_cdm, w, beta = parameters
+        self.itm = ITMSolver(parameters)
+        self.itm.solve(z_max=3.0)
 
-    #     # if w + beta = 0, rho_de diverges (1 / 0)
-    #     if abs(parameters[4] + parameters[5]) < 0.001:
-    #         return -np.inf
+    def get_prior(self, parameters):
+        # M, h, omega0_b, omega0_cdm, w, beta, phi0 = parameters
 
-    #     upper_bound = np.array([26.0, 0.8, 0.03, 0.3, -0.7, 1])
-    #     lower_bound = np.array([24.0, 0.55, 0.01, 0.01, -1.3, -1])
+        # since dphi0 = sqrt(1 - w0)
+        if parameters[4] < -1.0:
+            return -np.inf
 
-    #     if np.all(parameters > lower_bound) and np.all(parameters < upper_bound):
-    #         return 0.0
-    #     else:
-    #         return -np.inf
+        upper_bound = np.array([26.0, 0.8, 0.03, 0.3, -0.7, 1.0, 10.0])
+        lower_bound = np.array([24.0, 0.55, 0.01, 0.01, -1.0, -1.0, 0.0])
+
+        if np.all(parameters > lower_bound) and np.all(parameters < upper_bound):
+            return 0.0
+        else:
+            return -np.inf
 
     def rho_cdm(self, x, parameters):
-        # M = parameters[0]
-        h = parameters[1]
-        # omega0_b = parameters[2]
-        omega0_cdm = parameters[3]
-        # w = parameters[4]
-        beta = parameters[5]
-
-        H0 = 100.0 * h
-        # Omega0_b = omega0_b/h**2
-        Omega0_cdm = omega0_cdm / h**2
-        # Omega0_g = constants.radiation_density(h)
-        # Omega0_de = 1. - Omega0_g - Omega0_b - Omega0_cdm
-
-        # TODO(me): check
-        return Omega0_cdm * H0**2 * np.power(1.0 + x, 3.0 * (1.0 - beta))
+        # TODO
+        return
 
     def rho_de(self, x, parameters):
-        # M = parameters[0]
-        h = parameters[1]
-        omega0_b = parameters[2]
-        omega0_cdm = parameters[3]
-        w = parameters[4]
-        beta = parameters[5]
-
-        H0 = 100.0 * h
-        Omega0_b = omega0_b / h**2
-        Omega0_cdm = omega0_cdm / h**2
-        Omega0_g = constants.radiation_density(h)
-        Omega0_de = 1.0 - Omega0_g - Omega0_b - Omega0_cdm
-
-        de_factor = Omega0_de * H0**2
-        coup_factor = (beta / (beta + w)) * Omega0_cdm * H0**2
-
-        de_evol = np.power(1.0 + x, 3.0 * (1.0 + w))
-        coup_evol = np.power(1 + x, 3.0 * (1.0 - beta))
-
-        rho_bare = de_factor * de_evol
-        rho_coup = coup_factor * (de_evol - coup_evol)
-
-        return rho_bare + rho_coup
+        # TODO
+        return
