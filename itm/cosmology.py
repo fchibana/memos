@@ -351,8 +351,8 @@ class ITM(Cosmology):
 
     def rho_cdm(self, x, parameters):
         # TODO
-        return
+        return self.itm.get_rho_cdm_at_z(x)
 
     def rho_de(self, x, parameters):
         # TODO
-        return
+        return self.itm.get_rho_scf_at_z(x)

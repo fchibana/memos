@@ -61,6 +61,20 @@ class ITMSolver:
         coupling = np.exp(self.beta * self.H0 * (phi - self.phi0))
         return rho_bare * coupling
 
+    def get_rho_cdm_at_z(self, z):
+        return np.interp(z, self._solution["z"], self._solution["rho_cdm"])
+
+    def get_rho_cdm_analytical_at_z(self, z):
+        rho_cdm = self.rho_cdm_analytical(self._solution["z"], self._solution["phi"])
+        return np.interp(z, self._solution["z"], rho_cdm)
+
+    def get_rho_scf_at_z(self, z):
+        rho_scf = self._get_scf_energy_density(
+            self._solution["z"],
+            self._solution["phi"],
+            self._solution["dphi"])
+        return np.interp(z, self._solution["z"], rho_scf)
+
     def plot_solution(self, result):
         plt.plot(result["z"], result["phi"], label="phi")
         plt.plot(result["z"], result["dphi"], label="dphi")

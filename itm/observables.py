@@ -36,7 +36,8 @@ class Observables:
 
         dc_i = []
         for x_i in x:
-            dc_i.append(quad(self._inv_E, 0, x_i, args=(params), limit=150)[0])
+            print(x_i, quad(self._inv_E, 0.0, x_i, args=(params), limit=150))
+            dc_i.append(quad(self._inv_E, 0.0, x_i, args=(params), limit=150)[0])
 
         # in Mpc
         return c * np.asarray(dc_i) / H0
