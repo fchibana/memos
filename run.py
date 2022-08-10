@@ -13,8 +13,9 @@ def main():
     ]
     # cosmo = itm.cosmology.LCDM()
     # cosmo = itm.cosmology.WCDM()
-    cosmo = itm.cosmology.IDE1()
+    # cosmo = itm.cosmology.IDE1()
     # cosmo = itm.cosmology.IDE2()
+    cosmo = itm.cosmology.ITM()
 
     estimator = Estimator(model=cosmo, experiments=experiments)
     estimator.run(nwalkers=16)

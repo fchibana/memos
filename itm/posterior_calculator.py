@@ -25,6 +25,9 @@ class PosteriorCalculator:
         if np.isinf(ln_priors):
             return -np.inf
 
+        if self._cosmology.get_name() == "itm":
+            self._cosmology.update_and_solve(parameters)
+
         # make sure energy density is positive
         x = np.linspace(0, 20, 11)
         if np.any(self._cosmology.rho_de(x, parameters) < 0):

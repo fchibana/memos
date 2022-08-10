@@ -328,9 +328,10 @@ class ITM(Cosmology):
     _params_names = ["M", "h", "omega_b", "omega_cdm", "w", "beta", "phi0"]
     _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99, 0.0, 0.05]
 
-    def __init__(self, parameters: list) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
+    def update_and_solve(self, parameters: list) -> None:
         self.itm = ITMSolver(parameters)
         self.itm.solve(z_max=3.0)
 
