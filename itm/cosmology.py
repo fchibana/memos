@@ -333,7 +333,7 @@ class ITM(Cosmology):
 
     def update_and_solve(self, parameters: list) -> None:
         self.itm = ITMSolver(parameters)
-        self.itm.solve(z_max=3.0)
+        self.itm.solve(z_max=2.0)
 
     def get_prior(self, parameters):
         # M, h, omega0_b, omega0_cdm, w, beta, phi0 = parameters
