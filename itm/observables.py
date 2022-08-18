@@ -143,6 +143,9 @@ class Visualizer(Observables):
         self._experiments = experiments
         self._data = DataLoader(experiments)
 
+    def update(self, params):
+        return super().update(params)
+
     def show_local_hubble(self, parameters):
         # dataset = "local_hubble"
         data = self._data.get_local_hubble()
