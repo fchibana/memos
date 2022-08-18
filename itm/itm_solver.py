@@ -24,6 +24,10 @@ class ITMSolver:
         self.Omega0_b = self.omega0_b / self.h**2
         self.Omega0_cdm = self.omega0_cdm / self.h**2
 
+        # TODO: what to do with this?
+        omega0_fld = self.omega0_g + self.omega0_b + self.omega0_cdm
+        self.A = 100.0 * self.phi0 * sqrt((self.h**2 - omega0_fld) * sqrt(-self.w0))
+
         self._solution = None
 
     def solve(self, z_max):
@@ -121,10 +125,12 @@ class ITMSolver:
         rho_tot = 0
 
         # radiation:
-        rho_tot += self.Omega0_g * self.H0**2 * np.power(1 + z, 4.0)
+        # rho_tot += self.Omega0_g * self.H0**2 * np.power(1 + z, 4.0)
+        rho_tot += self.Omega0_g * self.H0**2 * (1.0 + z)**4.0
 
         # baryons:
-        rho_tot += self.Omega0_b * self.H0**2 * np.power(1 + z, 3.0)
+        # rho_tot += self.Omega0_b * self.H0**2 * np.power(1 + z, 3.0)
+        rho_tot += self.Omega0_b * self.H0**2 * (1.0 + z)**3.0
 
         # cdm:
         rho_tot += rho_cdm
@@ -132,15 +138,19 @@ class ITMSolver:
         # scf:
         rho_tot += self._get_scf_energy_density(z, phi, phi_dot)
 
-        return np.sqrt(rho_tot)
+        # return np.sqrt(rho_tot)
+        return sqrt(rho_tot)
 
     def _get_scf_potential(self, z, phi, phi_dot):
-        omega0_fld = self.omega0_g + self.omega0_b + self.omega0_cdm
-        A = 100.0 * self.phi0 * sqrt((self.h**2 - omega0_fld) * sqrt(-self.w0))
-        return np.power(A / phi, 2)
+        # omega0_fld = self.omega0_g + self.omega0_b + self.omega0_cdm
+        # A = 100.0 * self.phi0 * sqrt((self.h**2 - omega0_fld) * sqrt(-self.w0))
+        # return np.power(A / phi, 2)
+        return (self.A / phi) ** 2
 
     def _get_scf_dln_potential(self, z, phi, phi_dot):
         return -2.0 / phi
 
     def _get_scf_energy_density(self, z, phi, dphi):
-        return self._get_scf_potential(z, phi, dphi) / np.sqrt(1.0 - dphi**2)
+        if isinstance(z, np.ndarray):
+            return self._get_scf_potential(z, phi, dphi) / np.sqrt(1.0 - dphi**2)    
+        return self._get_scf_potential(z, phi, dphi) / sqrt(1.0 - dphi**2)
