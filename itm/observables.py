@@ -12,6 +12,10 @@ class Observables:
     def __init__(self, cosmology: Cosmology):
 
         self._cosmology = cosmology
+        self._dc_table = None
+
+    def update(self, params):
+        self._comoving_distance_table(params)
 
     def _inv_E(self, x, params):
         # M, h, omega0_b, omega0_cdm = params
@@ -36,19 +40,30 @@ class Observables:
 
         dc_i = []
         for x_i in x:
-            dc_i.append(quad(self._inv_E, 0.0, x_i, args=(params), limit=10000)[0])
+            # dc_i.append(quad(self._inv_E, 0.0, x_i, args=(params), limit=10000)[0])
+            dc_i.append(quad(self._inv_E, 0.0, x_i, args=(params))[0])
 
         # in Mpc
         return c * np.asarray(dc_i) / H0
 
+    def _comoving_distance_table(self, params):
+        z = np.arange(0.0, 2.0, 0.1)
+        self._dc_table = {
+            "z": z,
+            "dc": self._comoving_distance(z, params)}
+
     def _angular_diameter_distance(self, x, params):
 
         # in Mpc
-        return self._comoving_distance(x, params) / (1.0 + x)
+        # return self._comoving_distance(x, params) / (1.0 + x)
+        dc = np.interp(x, self._dc_table["z"], self._dc_table["dc"])
+        return dc / (1.0 + x)
 
     def _luminosity_distance(self, x, params):
         # in Mpc
-        return (1.0 + x) * self._comoving_distance(x, params)
+        # return (1.0 + x) * self._comoving_distance(x, params)
+        dc = np.interp(x, self._dc_table["z"], self._dc_table["dc"])
+        return (1.0 + x) * dc
 
     def distance_modulus(self, x, params):
         # M, h, omega0_b, omega0_cdm = params
@@ -100,7 +115,8 @@ class Observables:
 
         c = constants.C * pow(10.0, -3)  # km/s
         hubble = self._cosmology.hubble(x, params)  # km/s/Mpc
-        dc2 = self._comoving_distance(x, params) ** 2
+        # dc2 = self._comoving_distance(x, params) ** 2
+        dc2 = np.interp(x, self._dc_table["z"], self._dc_table["dc"]) ** 2
         dv = np.power((c * x / hubble) * dc2, 1.0 / 3.0)  # dilation scale
         rs = self._sound_horizon(params)  # sound horizon
 

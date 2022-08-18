@@ -50,6 +50,8 @@ class PosteriorCalculator:
         # Omega0_b = omega0_b/h**2
         # Omega0_cdm = omega0_cdm/h**2
 
+        self._observables.update(parameters)
+
         ln_likehood = 0
 
         if "local_hubble" in self._experiments:
