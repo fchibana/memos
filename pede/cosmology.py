@@ -1,8 +1,8 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
 
-from itm import constants
-from itm.itm_solver import ITMSolver
+from pede import constants
+from pede.itm_solver import ITMSolver
 
 
 class Cosmology(metaclass=ABCMeta):

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from itm.itm_solver import ITMSolver
+from pede.itm_solver import ITMSolver
 
 
 def relative_rms_error(x_expected: np.ndarray, x_predicted: np.ndarray):

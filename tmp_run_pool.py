@@ -6,12 +6,12 @@ import emcee
 import numpy as np
 import pathlib
 
-import itm.cosmology
-from itm.posterior_calculator import PosteriorCalculator
-import itm.utils
+import pede.cosmology
+from pede.posterior_calculator import PosteriorCalculator
+import pede.utils
 
 
-def get_chains(model: itm.cosmology.Cosmology, experiments: list, results_dir=None):
+def get_chains(model: pede.cosmology.Cosmology, experiments: list, results_dir=None):
 
     # Ensember configuration
     max_iter = 1000
@@ -86,8 +86,8 @@ def main():
         'bao_compilation',
         'bao_wigglez'
     ]
-    cosmo = itm.cosmology.LCDM()
-    # cosmo = itm.cosmology.WCDM()
+    cosmo = pede.cosmology.LCDM()
+    # cosmo = pede.cosmology.WCDM()
 
     # paths
     # RESULTS_BASE_DIR = pathlib.Path("results")

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import ode
 
-import itm.constants
+import pede.constants
 
 
 class ITMSolver:
@@ -19,8 +19,8 @@ class ITMSolver:
         self.phi0 = parameters[6]
 
         self.H0 = 100.0 * self.h
-        self.omega0_g = itm.constants.get_omega0_g()
-        self.Omega0_g = itm.constants.radiation_density(self.h)
+        self.omega0_g = pede.constants.get_omega0_g()
+        self.Omega0_g = pede.constants.radiation_density(self.h)
         self.Omega0_b = self.omega0_b / self.h**2
         self.Omega0_cdm = self.omega0_cdm / self.h**2
 

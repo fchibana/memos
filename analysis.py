@@ -1,12 +1,12 @@
-import itm.cosmology
-from itm.estimator import Estimator
+import pede.cosmology
+from pede.estimator import Estimator
 
 
 def main():
     fname = "results/ide1_20220504_153246"
-    # cosmo = itm.cosmology.LCDM()
-    cosmo = itm.cosmology.IDE1()
-    # cosmo = itm.cosmology.IDE2()
+    # cosmo = pede.cosmology.LCDM()
+    cosmo = pede.cosmology.IDE1()
+    # cosmo = pede.cosmology.IDE2()
     experiments = [
         "local_hubble",
         "cosmic_chronometers",

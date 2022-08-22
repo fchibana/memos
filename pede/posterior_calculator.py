@@ -1,8 +1,8 @@
 import numpy as np
 
-from itm.cosmology import Cosmology
-from itm.data_loader import DataLoader
-from itm.observables import Observables
+from pede.cosmology import Cosmology
+from pede.data_loader import DataLoader
+from pede.observables import Observables
 
 
 class PosteriorCalculator:

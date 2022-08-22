@@ -3,9 +3,9 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-from itm import constants
-from itm.data_loader import DataLoader
-from itm.cosmology import Cosmology
+from pede import constants
+from pede.data_loader import DataLoader
+from pede.cosmology import Cosmology
 
 
 class Observables:

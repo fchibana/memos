@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from itm.cosmology import Cosmology
-from itm.posterior_calculator import PosteriorCalculator
+from pede.cosmology import Cosmology
+from pede.posterior_calculator import PosteriorCalculator
 
 
 class Estimator:

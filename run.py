@@ -1,6 +1,6 @@
-import itm.cosmology
-from itm.estimator import Estimator
-import itm.utils
+import pede.cosmology
+from pede.estimator import Estimator
+import pede.utils
 
 
 def main():
@@ -11,11 +11,11 @@ def main():
         "bao_compilation",
         "bao_wigglez",
     ]
-    # cosmo = itm.cosmology.LCDM()
-    # cosmo = itm.cosmology.WCDM()
-    # cosmo = itm.cosmology.IDE1()
-    # cosmo = itm.cosmology.IDE2()
-    cosmo = itm.cosmology.ITM()
+    cosmo = pede.cosmology.LCDM()
+    # cosmo = pede.cosmology.WCDM()
+    # cosmo = pede.cosmology.IDE1()
+    # cosmo = pede.cosmology.IDE2()
+    # cosmo = pede.cosmology.ITM()
 
     estimator = Estimator(model=cosmo, experiments=experiments)
     estimator.run(nwalkers=16)
