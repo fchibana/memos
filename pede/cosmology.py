@@ -84,7 +84,6 @@ class LCDM(Cosmology):
         super().__init__()
 
     def get_prior(self, parameters):
-        # TODO(me): update in accordance with thesis
         M = parameters[0]
         h = parameters[1]
         omega0_b = parameters[2]
@@ -133,14 +132,12 @@ class LCDM(Cosmology):
 class WCDM(Cosmology):
     _name = "wcdm"
     _params_names = ["M", "h", "omega_b", "omega_cdm", "w"]
-    # TODO: update with best-fit
     _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99]
 
     def __init__(self) -> None:
         super().__init__()
 
     def get_prior(self, parameters):
-        # TODO(me): update in accordance with thesis
         M = parameters[0]
         h = parameters[1]
         omega0_b = parameters[2]
@@ -294,7 +291,6 @@ class IDE2(Cosmology):
         # Omega0_g = constants.radiation_density(h)
         # Omega0_de = 1. - Omega0_g - Omega0_b - Omega0_cdm
 
-        # TODO(me): check
         return Omega0_cdm * H0**2 * np.power(1.0 + x, 3.0 * (1.0 - beta))
 
     def rho_de(self, x, parameters):
@@ -323,6 +319,7 @@ class IDE2(Cosmology):
         return rho_bare + rho_coup
 
 
+# TODO: implement ITM(Cosmology)
 class ITM(Cosmology):
     _name = "itm"
     _params_names = ["M", "h", "omega_b", "omega_cdm", "w", "beta", "phi0"]
@@ -351,9 +348,7 @@ class ITM(Cosmology):
             return -np.inf
 
     def rho_cdm(self, x, parameters):
-        # TODO
         return self.itm.get_rho_cdm_at_z(x)
 
     def rho_de(self, x, parameters):
-        # TODO
         return self.itm.get_rho_scf_at_z(x)

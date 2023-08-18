@@ -23,7 +23,7 @@ class ITMSolver:
         self.Omega0_b = self.omega0_b / self.h**2
         self.Omega0_cdm = self.omega0_cdm / self.h**2
 
-        # TODO: what to do with this?
+        # TODO: check ITM parametrization for initial conditions
         omega0_fld = self.omega0_g + self.omega0_b + self.omega0_cdm
         self.A = 100.0 * self.phi0 * sqrt((self.h**2 - omega0_fld) * sqrt(-self.w0))
 

@@ -89,7 +89,6 @@ class Estimator:
             autocorr_index += 1
 
             # Check convergence
-            # TODO(me): check these conditions
             converged = np.all(tau * 100 < sampler.iteration)
             converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
             if converged:

@@ -3,9 +3,9 @@ from pede.estimator import Estimator
 
 
 def main():
-    fname = "results/ide1_20220504_153246"
-    # cosmo = pede.cosmology.LCDM()
-    cosmo = pede.cosmology.IDE1()
+    fname = "results/lcdm_20230817_133704"
+    cosmo = pede.cosmology.LCDM()
+    # cosmo = pede.cosmology.IDE1()
     # cosmo = pede.cosmology.IDE2()
     experiments = [
         "local_hubble",

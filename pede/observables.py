@@ -87,7 +87,6 @@ class Observables:
 
         omega0_m = (Omega0_b + Omega0_cdm) * h**2
 
-        # TODO: where did this come from??
         # Sound horizon at the drag epoch in Mpc (Eisenstein & Hu)
         r_d = (44.5 * math.log(9.83 / omega0_m)) / math.sqrt(
             1.0 + 10 * pow(omega0_b, (3.0 / 4.0))

@@ -1,0 +1,14 @@
+name:
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - scipy
+  - emcee
+  - matplotlib
+  - numpy
+  - pandas
+  - yaml
+  - h5py
+  - tqdm
+prefix:
