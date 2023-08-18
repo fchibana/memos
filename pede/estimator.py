@@ -1,6 +1,6 @@
-from datetime import datetime
 import math
 import pathlib
+from datetime import datetime
 
 import corner
 import emcee
@@ -132,14 +132,12 @@ class Estimator:
         return self._samples
 
     def plot(self, save=False):
-
         if self._samples is None:
             print("Oops, no samples to plot. Let me get that for ya'.")
             self.get_samples()
 
         fig = corner.corner(
             self._samples,
-            # labels=["M", "$h$", "$\Omega_{b} h^2$", "$\Omega_{c} h^2$", "$w$"],
             label=self._model.get_params_names(),
             quantiles=(0.16, 0.5, 0.84),
             show_titles=True,
@@ -186,7 +184,6 @@ class Estimator:
         return self._best_fit
 
     def information_criterion(self, save=False):
-
         if self._best_fit is None:
             print("Oops, no best fit. Let be get that for ya'.")
             self.get_best_fit(save=save)

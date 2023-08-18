@@ -25,7 +25,6 @@ def relative_rms_error(x_expected: np.ndarray, x_predicted: np.ndarray):
 
 
 class TestITMSolver:
-
     def test_solution_dictionary_has_keys(self):
         params = [
             25.0,  # M

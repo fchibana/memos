@@ -12,7 +12,6 @@ import pede.utils
 
 
 def get_chains(model: pede.cosmology.Cosmology, experiments: list, results_dir=None):
-
     # Ensember configuration
     max_iter = 1000
     n_walkers = 32
@@ -21,7 +20,9 @@ def get_chains(model: pede.cosmology.Cosmology, experiments: list, results_dir=N
     n_params = len(params_ic)
 
     if results_dir is None:
-        results_dir = pathlib.Path(model.get_name() + "_" + datetime.now().strftime("%Y%m%d_%H%M%S"))
+        results_dir = pathlib.Path(
+            model.get_name() + "_" + datetime.now().strftime("%Y%m%d_%H%M%S")
+        )
     if not results_dir.is_dir():
         results_dir.mkdir()
 
@@ -33,17 +34,20 @@ def get_chains(model: pede.cosmology.Cosmology, experiments: list, results_dir=N
     print("  model: ", model.get_name())
     print("  initial guess: ", params_ic)
     print("  walkers: ", n_walkers)
-    
+
     with Pool() as pool:
         # set up probabilities
         prob = PosteriorCalculator(cosmology=model, experiments=experiments)
-        
+
         # set up emcee sampler
         sampler = emcee.EnsembleSampler(
-            n_walkers, n_params, prob.ln_posterior, backend=backend, pool=pool)
+            n_walkers, n_params, prob.ln_posterior, backend=backend, pool=pool
+        )
 
         # set up walkers around initial conditions
-        walkers_ic = [params_ic + 1e-4 * np.random.randn(n_params) for i in range(n_walkers)]
+        walkers_ic = [
+            params_ic + 1e-4 * np.random.randn(n_params) for i in range(n_walkers)
+        ]
 
         # We'll track how the average autocorrelation time estimate changes
         autocorr_index = 0
@@ -74,17 +78,18 @@ def get_chains(model: pede.cosmology.Cosmology, experiments: list, results_dir=N
                 break
             old_tau = tau
 
+
 # def check_convergence():
 
 
 def main():
     # run configuration
     experiments = [
-        'local_hubble',
-        'cosmic_chronometers',
-        'jla',
-        'bao_compilation',
-        'bao_wigglez'
+        "local_hubble",
+        "cosmic_chronometers",
+        "jla",
+        "bao_compilation",
+        "bao_wigglez",
     ]
     cosmo = pede.cosmology.LCDM()
     # cosmo = pede.cosmology.WCDM()

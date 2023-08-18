@@ -9,7 +9,6 @@ import pede.constants
 
 class ITMSolver:
     def __init__(self, parameters: list) -> None:
-
         # M = parameters[0]
         self.h = parameters[1]
         self.omega0_b = parameters[2]
@@ -74,9 +73,8 @@ class ITMSolver:
 
     def get_rho_scf_at_z(self, z):
         rho_scf = self._get_scf_energy_density(
-            self._solution["z"],
-            self._solution["phi"],
-            self._solution["dphi"])
+            self._solution["z"], self._solution["phi"], self._solution["dphi"]
+        )
         return np.interp(z, self._solution["z"], rho_scf)
 
     def plot_solution(self, result):
@@ -121,16 +119,15 @@ class ITMSolver:
         return [x0_out, x1_out, x2_out]
 
     def _get_hubble(self, z, phi, phi_dot, rho_cdm):
-
         rho_tot = 0
 
         # radiation:
         # rho_tot += self.Omega0_g * self.H0**2 * np.power(1 + z, 4.0)
-        rho_tot += self.Omega0_g * self.H0**2 * (1.0 + z)**4.0
+        rho_tot += self.Omega0_g * self.H0**2 * (1.0 + z) ** 4.0
 
         # baryons:
         # rho_tot += self.Omega0_b * self.H0**2 * np.power(1 + z, 3.0)
-        rho_tot += self.Omega0_b * self.H0**2 * (1.0 + z)**3.0
+        rho_tot += self.Omega0_b * self.H0**2 * (1.0 + z) ** 3.0
 
         # cdm:
         rho_tot += rho_cdm
@@ -152,5 +149,5 @@ class ITMSolver:
 
     def _get_scf_energy_density(self, z, phi, dphi):
         if isinstance(z, np.ndarray):
-            return self._get_scf_potential(z, phi, dphi) / np.sqrt(1.0 - dphi**2)    
+            return self._get_scf_potential(z, phi, dphi) / np.sqrt(1.0 - dphi**2)
         return self._get_scf_potential(z, phi, dphi) / sqrt(1.0 - dphi**2)

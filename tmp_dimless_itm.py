@@ -55,7 +55,7 @@ class DimensionlessITM:
         return potential / np.sqrt(1.0 - dphi**2)
 
     def dimensionless_scf_potential(self, phi, dphi):
-        v0 = self.Omega0_scf * np.sqrt(1.0 - dphi ** 2)
+        v0 = self.Omega0_scf * np.sqrt(1.0 - dphi**2)
         return v0 * np.power(self.phi0 / phi, self.n)
 
     def dln_scf_potential(self, phi):
@@ -90,7 +90,6 @@ class DimensionlessITM:
         return [dphi_dz, ddphi_dz, drho_cdm_dz]
 
     def solve(self, z_max):
-
         # initial conditions (move to constructor?)
         z_ini = 0.0
         phi_ini = self.phi0
@@ -100,7 +99,7 @@ class DimensionlessITM:
         ic = phi_ini, phi_dot_ini, rho_cdm_ini
 
         # ode solver
-        backend = 'vode'
+        backend = "vode"
         # backend = "dopri5"
         # solver = ode(self.get_ode).set_integrator(backend, nsteps=1)
         solver = ode(self.get_ode).set_integrator(backend)
@@ -120,12 +119,7 @@ class DimensionlessITM:
         dphi = sol[:, 2]
         rho_cdm = sol[:, 3]
 
-        self.result = {
-            "z": z,
-            "phi": phi,
-            "dphi": dphi,
-            "rho_cdm": rho_cdm
-        }
+        self.result = {"z": z, "phi": phi, "dphi": dphi, "rho_cdm": rho_cdm}
 
         return self.result
 
@@ -144,7 +138,6 @@ class DimensionlessITM:
 
 
 def test_rho_cdm_uncoupled():
-
     M = 25.0
     omega0_b = 0.02262
     omega0_cdm = 0.12
@@ -164,7 +157,7 @@ def test_rho_cdm_uncoupled():
     # analytical solution for uncoupled model
     rho_cdm_analytic = itm.Omega0_cdm * (1.0 + z_sol) ** 3
 
-    error = (rho_cdm_sol - rho_cdm_analytic)**2
+    error = (rho_cdm_sol - rho_cdm_analytic) ** 2
     error = error.mean()
 
     print("Error: ", error)

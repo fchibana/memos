@@ -10,7 +10,6 @@ from pede.cosmology import Cosmology
 
 class Observables:
     def __init__(self, cosmology: Cosmology):
-
         self._cosmology = cosmology
         self._dc_table = None
 
@@ -48,12 +47,9 @@ class Observables:
 
     def _comoving_distance_table(self, params):
         z = np.arange(0.0, 2.0, 0.1)
-        self._dc_table = {
-            "z": z,
-            "dc": self._comoving_distance(z, params)}
+        self._dc_table = {"z": z, "dc": self._comoving_distance(z, params)}
 
     def _angular_diameter_distance(self, x, params):
-
         # in Mpc
         # return self._comoving_distance(x, params) / (1.0 + x)
         dc = np.interp(x, self._dc_table["z"], self._dc_table["dc"])

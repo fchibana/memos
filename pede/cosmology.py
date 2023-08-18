@@ -224,10 +224,10 @@ class IDE1(Cosmology):
         beta = parameters[5]
 
         H0 = 100.0 * h
-        Omega0_b = omega0_b/h**2
+        Omega0_b = omega0_b / h**2
         Omega0_cdm = omega0_cdm / h**2
         Omega0_g = constants.radiation_density(h)
-        Omega0_de = 1. - Omega0_g - Omega0_b - Omega0_cdm
+        Omega0_de = 1.0 - Omega0_g - Omega0_b - Omega0_cdm
 
         cdm_factor = Omega0_cdm * H0**2
         coup_factor = (beta / (beta + w)) * Omega0_de * H0**2
