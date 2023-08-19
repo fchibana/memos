@@ -7,6 +7,7 @@ import emcee
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import yaml
 
 from pede.cosmology import Cosmology
 from pede.posterior_calculator import PosteriorCalculator
@@ -41,7 +42,7 @@ class Estimator:
         )
 
         if not self._results_dir.is_dir():
-            self._results_dir.mkdir()
+            self._results_dir.mkdir(parents=True)
 
         chains_path = self._results_dir / "chains.h5"
         backend = emcee.backends.HDFBackend(chains_path)
@@ -51,6 +52,13 @@ class Estimator:
         print("  model: ", self._model.get_name())
         print("  initial guess: ", params_ic)
         print("  walkers: ", self._nwalkers)
+
+        self.save_params(
+            self._model.get_name(),
+            self._nwalkers,
+            max_iter,
+            self._results_dir,
+        )
 
         # set up probabilities
         prob = PosteriorCalculator(cosmology=self._model, experiments=self._experiments)
@@ -92,6 +100,7 @@ class Estimator:
             converged = np.all(tau * 100 < sampler.iteration)
             converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
             if converged:
+                print("Converged!")
                 break
             old_tau = tau
 
@@ -221,3 +230,22 @@ class Estimator:
         self.get_best_fit(save=save)
         self.information_criterion(save=save)
         self.plot(save=save)
+
+    def save_params(
+        self,
+        model: str,
+        nwalkers: int,
+        max_iter: int,
+        results_dir: pathlib.Path,
+    ):
+        params = {
+            "model": model,
+            "nwalkers": nwalkers,
+            "max_iter": max_iter,
+            "results_dir": results_dir.as_posix(),
+        }
+
+        # save the samples as a yaml file
+        fname = results_dir / "params.yaml"
+        with open(fname, "w") as outfile:
+            yaml.dump(params, outfile)

@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+
 import numpy as np
 
 from pede import constants
@@ -75,8 +76,16 @@ class Cosmology(metaclass=ABCMeta):
         return np.sqrt(rho_tot)
 
 
+class ModelNames:
+    LCDM = "lcdm"
+    WCDM = "wcdm"
+    IDE1 = "ide1"
+    IDE2 = "ide2"
+    ITM = "itm"
+
+
 class LCDM(Cosmology):
-    _name = "lcdm"
+    _name = ModelNames.LCDM
     _params_names = ["M", "h", "omega_b", "omega_cdm"]
     _params_initial_guess = [25.01, 0.71, 0.025, 0.12]
 
@@ -130,7 +139,7 @@ class LCDM(Cosmology):
 
 
 class WCDM(Cosmology):
-    _name = "wcdm"
+    _name = ModelNames.WCDM
     _params_names = ["M", "h", "omega_b", "omega_cdm", "w"]
     _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99]
 
@@ -190,7 +199,7 @@ class WCDM(Cosmology):
 
 
 class IDE1(Cosmology):
-    _name = "ide1"
+    _name = ModelNames.IDE1
     _params_names = ["M", "h", "omega_b", "omega_cdm", "w", "beta"]
     _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99, 0.0]
 
@@ -255,7 +264,7 @@ class IDE1(Cosmology):
 
 
 class IDE2(Cosmology):
-    _name = "ide2"
+    _name = ModelNames.IDE2
     _params_names = ["M", "h", "omega_b", "omega_cdm", "w", "beta"]
     _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99, 0.0]
 
@@ -321,7 +330,7 @@ class IDE2(Cosmology):
 
 # TODO: implement ITM(Cosmology)
 class ITM(Cosmology):
-    _name = "itm"
+    _name = ModelNames.ITM
     _params_names = ["M", "h", "omega_b", "omega_cdm", "w", "beta", "phi0"]
     _params_initial_guess = [24.96, 0.69, 0.022, 0.12, -0.99, 0.0, 0.05]
 

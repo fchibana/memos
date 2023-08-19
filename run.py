@@ -8,19 +8,56 @@ from pede.estimator import Estimator
 def parse_args():
     parse = argparse.ArgumentParser()
 
-    # add argument for model. possible values: LCDM, WCDM, IDE1, IDE2, ITM.
-    # default is LCDM.
     parse.add_argument(
         "-m",
         "--model",
         type=str,
         default="LCDM",
-        help="model to be used for the estimation",
+        help=(
+            "model to be used for the estimation. "
+            "possible values: lcdm, wcdm, ide1, ide2. "
+            "default is lcdm."
+        ),
     )
+
+    parse.add_argument(
+        "-n",
+        "--nwalkers",
+        type=int,
+        default=16,
+        help="number of walkers to be used for the estimation. default is 16.",
+    )
+
+    parse.add_argument(
+        "-i",
+        "--max_iter",
+        type=int,
+        default=50000,
+        help=(
+            "maximum number of iterations to be used for the estimation. "
+            "default is 50000."
+        ),
+    )
+
+    return vars(parse.parse_args())
 
 
 def main():
-    # TODO: add command line arguments
+    args = parse_args()
+
+    if args["model"] == pede.cosmology.ModelNames.LCDM:
+        cosmo = pede.cosmology.LCDM()
+    elif args["model"] == pede.cosmology.ModelNames.WCDM:
+        cosmo = pede.cosmology.WCDM()
+    elif args["model"] == pede.cosmology.ModelNames.IDE1:
+        cosmo = pede.cosmology.IDE1()
+    elif args["model"] == pede.cosmology.ModelNames.IDE2:
+        cosmo = pede.cosmology.IDE2()
+    # elif args["model"] == pede.cosmology.ModelNames.ITM:
+    #     cosmo = pede.cosmology.ITM()
+    else:
+        raise ValueError(f"Invalid model: {args['model']}.")
+
     experiments = [
         "local_hubble",
         "cosmic_chronometers",
@@ -28,14 +65,10 @@ def main():
         "bao_compilation",
         "bao_wigglez",
     ]
-    cosmo = pede.cosmology.LCDM()
-    # cosmo = pede.cosmology.WCDM()
-    # cosmo = pede.cosmology.IDE1()
-    # cosmo = pede.cosmology.IDE2()
-    # cosmo = pede.cosmology.ITM()
 
     estimator = Estimator(model=cosmo, experiments=experiments)
-    estimator.run(nwalkers=16, max_iter=50000)
+    estimator.run(nwalkers=args["nwalkers"], max_iter=args["max_iter"])
+    print("Done")
 
 
 if __name__ == "__main__":
