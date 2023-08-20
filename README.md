@@ -22,6 +22,7 @@ h5py
 yaml
 tqdm: conda install -c conda-forge tqdm
 
+`python3 -m pip install numpy matplotlib scipy pandas emcee corner h5py tqdm yaml`
 
 TODO: add venv and conda instructions
 

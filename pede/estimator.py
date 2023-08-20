@@ -1,6 +1,7 @@
 import math
 import pathlib
 from datetime import datetime
+from typing import Optional
 
 import corner
 import emcee
@@ -14,9 +15,18 @@ from pede.posterior_calculator import PosteriorCalculator
 
 
 class Estimator:
-    def __init__(self, model: Cosmology, experiments: list) -> None:
+    def __init__(self, model: Cosmology, experiments: Optional[list] = None) -> None:
         self._model = model
-        self._experiments = experiments
+        if experiments is None:
+            self._experiments = [
+                "local_hubble",
+                "cosmic_chronometers",
+                "jla",
+                "bao_compilation",
+                "bao_wigglez",
+            ]
+        else:
+            self._experiments = experiments
 
         self._results_dir = None
         self._nwalkers = None
