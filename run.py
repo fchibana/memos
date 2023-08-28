@@ -12,11 +12,18 @@ def parse_args():
         "-m",
         "--model",
         type=str,
-        default="LCDM",
+        required=True,
         help=(
             "model to be used for the estimation. "
-            "possible values: lcdm, wcdm, ide1, ide2. "
-            "default is lcdm."
+            "possible values: "
+            + pede.cosmology.ModelNames.LCDM
+            + ", "
+            + pede.cosmology.ModelNames.WCDM
+            + ", "
+            + pede.cosmology.ModelNames.IDE1
+            + ", "
+            + pede.cosmology.ModelNames.IDE2
+            + ". "
         ),
     )
 

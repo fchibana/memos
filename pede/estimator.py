@@ -162,7 +162,8 @@ class Estimator:
             title_kwargs={"fontsize": 12},
         )
         fig.suptitle(
-            f"{self._model.get_name()} with {self._nwalkers} walkers and xx steps"
+            f"{self._model.get_name()}"
+            # f"{self._model.get_name()} with {self._nwalkers} walkers and xx steps"
         )
         plt.show()
 
