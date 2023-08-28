@@ -1,2 +1,0 @@
-# H0 prior from http://arxiv.org/abs/1604.01424
-73.02	1.79
